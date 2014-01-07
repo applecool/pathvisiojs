@@ -1,1 +1,0 @@
-pathvisiojs.data = {};
