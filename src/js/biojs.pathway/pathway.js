@@ -1,0 +1,1 @@
+Biojs.pathway = pathvisiojs.pathway;
