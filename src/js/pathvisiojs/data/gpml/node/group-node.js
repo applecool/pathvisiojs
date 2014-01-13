@@ -13,11 +13,13 @@ pathvisiojs.data.gpml.element.node.groupNode = function() {
     'FontWeight':null
   }
 
-  function getGroupDimensions(group, groupContents, callback) {
+  function getGroupDimensions(group, callback) {
+    /*
     console.log('group');
     console.log(group);
     console.log('groupContents');
     console.log(groupContents);
+    //*/
     var dimensions = {};
     dimensions.topLeftCorner = {};
     dimensions.topLeftCorner.x = 99999;
@@ -25,6 +27,9 @@ pathvisiojs.data.gpml.element.node.groupNode = function() {
     dimensions.bottomRightCorner = {};
     dimensions.bottomRightCorner.x = 0;
     dimensions.bottomRightCorner.y = 0;
+
+    var groupContents = group.contains;
+    groupContents = pathvisiojs.utilities.convertToArray(groupContents);
     groupContents.forEach(function(groupContent) {
       if (groupContent.renderableType === 'EntityNode') {
         dimensions.topLeftCorner.x = Math.min(dimensions.topLeftCorner.x, groupContent.x);
@@ -47,100 +52,75 @@ pathvisiojs.data.gpml.element.node.groupNode = function() {
   }
 
   function toRenderableJson(pathway, gpmlGroup, pathwayIri, callbackOutside) {
-    try {
-      var jsonGroup = {},
-      groupId;
-      var shapeType,
+    var jsonGroup = {},
+      groupId,
+      shapeType,
       groupType;
 
-      var graphId = gpmlGroup.attr('GraphId') || ('id' + uuid.v4());
-      jsonGroup.GraphId = graphId;
-      groupId = gpmlGroup.attr('GroupId') || ('id' + uuid.v4());
-      jsonGroup["@id"] = pathwayIri + groupId;
-      jsonGroup.GroupId = groupId;
-      groupType = gpmlGroup.attr('Style') || 'None';
+    var graphId = gpmlGroup.attr('GraphId') || ('id' + uuid.v4());
+    jsonGroup.GraphId = graphId;
+    groupId = gpmlGroup.attr('GroupId') || ('id' + uuid.v4());
+    jsonGroup["@id"] = pathwayIri + groupId;
+    jsonGroup.GroupId = groupId;
+    groupType = gpmlGroup.attr('Style') || 'None';
 
-      var shapeType = groupTypeToShapeTypeMappings[groupType];
-      jsonGroup.ShapeType = shapeType || 'rectangle';
+    var shapeType = groupTypeToShapeTypeMappings[groupType];
+    jsonGroup.ShapeType = shapeType || 'rectangle';
 
-      jsonGroup.renderableType = 'GroupNode';
-      jsonGroup.nodeType = "GroupNode";
-      jsonGroup.groupType = groupType;
+    jsonGroup.renderableType = 'GroupNode';
+    jsonGroup.nodeType = "GroupNode";
+    jsonGroup.groupType = groupType;
 
-      jsonGroup["@type"] = [];
-      jsonGroup["@type"].push(shapeType);
-      jsonGroup["@type"].push("GroupNode");
-      jsonGroup["@type"].push(groupType);
+    jsonGroup["@type"] = [];
+    jsonGroup["@type"].push(shapeType);
+    jsonGroup["@type"].push("GroupNode");
+    jsonGroup["@type"].push(groupType);
 
-      // Groups in PathVisio (Java) appear to have unchangable padding values,
-      // but they are different based on GroupType.
+    // Groups in PathVisio (Java) appear to have unchangable padding values,
+    // but they are different based on GroupType.
 
-      var groupTypeToPaddingValueMappings = {
-        'Complex': 11,
-        'Group': 8,
-        'None': 8,
-        'Pathway': 8
-      };
+    var groupTypeToPaddingValueMappings = {
+      'Complex': 11,
+      'Group': 8,
+      'None': 8,
+      'Pathway': 8
+    };
 
-      jsonGroup.padding = groupTypeToPaddingValueMappings[groupType];
+    jsonGroup.padding = groupTypeToPaddingValueMappings[groupType];
 
-      // Groups in PathVisio (Java) appear to have a default borderWidth
-      // of 1px at normal zoom levels, but unlike for edges and EntityNodes, 
-      // this borderWidth does not change when I zoom in or out.
-      //
-      // TODO this should be updated to check for whether it is defined
-      // in CSS. If it is, this could conflict or require defining
-      // borderWidth twice -- once here and once in CSS.
+    // Groups in PathVisio (Java) appear to have a default borderWidth
+    // of 1px at normal zoom levels, but unlike for edges and EntityNodes, 
+    // this borderWidth does not change when I zoom in or out.
+    //
+    // TODO this should be updated to check for whether it is defined
+    // in CSS. If it is, this could conflict or require defining
+    // borderWidth twice -- once here and once in CSS.
 
-      jsonGroup.borderWidth = 1;
-      pathvisiojs.data.gpml.text.toRenderableJson(gpmlGroup, pathvisioDefaultStyleValues, function(text) {
-        console.log('text');
-        console.log(text);
-        if (!!text) {
-          jsonGroup.text = text;
+    jsonGroup.borderWidth = 1;
+    pathvisiojs.data.gpml.text.toRenderableJson(gpmlGroup, pathvisioDefaultStyleValues, function(text) {
+      /*
+      console.log('text');
+      console.log(text);
+      //*/
+      if (!!text) {
+        jsonGroup.text = text;
 
-          // TODO set fontSize in CSS, not here. Need to be able to still calculate font rendering, however,
-          // which depends in part on font size.
+        // TODO set fontSize in CSS, not here. Need to be able to still calculate font rendering, however,
+        // which depends in part on font size.
 
-          jsonGroup.text.fontSize = 32;
-          jsonGroup.text.textAlign = 'center';
-          jsonGroup.text.verticalAlign = 'middle';
-        }
-        pathvisiojs.data.gpml.element.node.toRenderableJson(gpmlGroup, jsonGroup, function(jsonGroup) {
-          callbackOutside(jsonGroup);
-        });
+        jsonGroup.text.fontSize = 32;
+        jsonGroup.text.textAlign = 'center';
+        jsonGroup.text.verticalAlign = 'middle';
+      }
+      pathvisiojs.data.gpml.element.node.toRenderableJson(gpmlGroup, jsonGroup, function(jsonGroup) {
+        callbackOutside(jsonGroup);
       });
-    }
-    catch (e) {
-      throw new Error("Error converting Group to renderable json: " + e.message);
-    }
-  }
-
-  function calculateImplicitRenderingData(jsonGroup, callbackOutside) {
-    console.log('jsonGroup');
-    console.log(jsonGroup);
-    try {
-      getGroupDimensions(jsonGroup, jsonGroup['contains'], function(dimensions) {
-        jsonGroup.x = dimensions.x;
-        jsonGroup.y = dimensions.y;
-        jsonGroup.width = dimensions.width;
-        jsonGroup.height = dimensions.height;
-        pathvisiojs.data.gpml.element.node.getPorts(jsonGroup, function(ports) {
-          jsonGroup.Port = ports;
-        });
-      });
-    }
-    catch (e) {
-      throw new Error("Error converting Group to renderable json: " + e.message);
-    }
-    finally {
-      callbackOutside(jsonGroup);
-    }
+    });
   }
 
   return {
     toRenderableJson:toRenderableJson,
-    calculateImplicitRenderingData:calculateImplicitRenderingData
+    getGroupDimensions:getGroupDimensions
   };
 }();
 

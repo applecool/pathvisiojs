@@ -1,3 +1,4 @@
+"use strict"
 pathvisiojs.view.pathwayDiagram.svg.edge.marker = function(){
 
   // the way SVG works makes this code more complex than it should need to be. Essentially, we
@@ -41,69 +42,93 @@ pathvisiojs.view.pathwayDiagram.svg.edge.marker = function(){
     'none':'shape-library-markers-none-svg'
   };
 
+  var colorsAvailable = {
+    'shape-library-markers-arrow-svg':['default'],
+    'shape-library-markers-mim-necessary-stimulation-svg':['default'],
+    'shape-library-markers-mim-binding-svg':['default'],
+    'shape-library-markers-mim-conversion-svg':['default'],
+    'shape-library-markers-mim-stimulation-svg':['default'],
+    'shape-library-markers-mim-modification-svg':['default'],
+    'shape-library-markers-mim-catalysis-svg':['default'],
+    'shape-library-markers-mim-inhibition-svg':['default'],
+    'shape-library-markers-mim-cleavage-svg':['default'],
+    'shape-library-markers-mim-covalent-bond-svg':['default'],
+    'shape-library-markers-mim-transcription-translation-svg':['default'],
+    'shape-library-markers-mim-gap-svg':['default'],
+    'shape-library-markers-t-bar-svg':['default'],
+    'shape-library-markers-mim-branching-left-svg':['default'],
+    'shape-library-markers-mim-branching-right-svg':['default'],
+    'shape-library-markers-none-svg':['default']
+  };
+
   function appendCustom(uniqueMarkerShapeUrl, callback) {
     var idStub = strcase.paramCase(uniqueMarkerShapeUrl)
     var startId = idStub + '-start-default';
     var endId = idStub + '-end-default';
     var markerStart = svg.select('defs').select('#' + startId);
-    if (!markerStart[0][0]) {
-      markerStart.selectAll('*').remove();
-    }
 
     markerStart = svg.select('defs').append('marker')
     .attr('id', startId)
     .attr('preserveAspectRatio', 'none');
+    processSvg(uniqueMarkerShapeUrl, markerStart, startId, false);
 
     var markerEnd = svg.select('defs').select('#' + endId);
-    if (!markerEnd[0][0]) {
-      markerEnd.selectAll('*').remove();
-    }
     markerEnd = svg.select('defs').append('marker')
     .attr('id', endId)
     .attr('preserveAspectRatio', 'none');
+    processSvg(uniqueMarkerShapeUrl, markerEnd, endId, true);
 
-    if (uniqueMarkerShapeUrl.indexOf('.svg') > 0) {
-      d3.xml(uniqueMarkerShapeUrl, 'image/svg+xml', function(svgXml) {
-        var newMarker = d3.select(svgXml.documentElement)
-        var width = newMarker.attr('width');
-        var height = newMarker.attr('height');
+    callback(null);
+  }
 
-        markerStart.attr('viewBox', '0 0 ' + width + ' ' + height)
-        .attr('markerWidth', width)
-        .attr('markerHeight', height)
-        .attr('markerUnits', 'strokeWidth')
-        .attr('orient', 'auto')
-        .attr('refX', 0)
-        .attr('refY', 6);
+  function processSvg(uniqueMarkerShapeUrl, marker, markerId, rotate){
+    d3.xml(uniqueMarkerShapeUrl, 'image/svg+xml', function(svgXml) {
+      var newMarker = d3.select(svgXml.documentElement);
+      var width = newMarker.attr('width');
+      var height = newMarker.attr('height');
+      var markerClass = newMarker.attr('class');
+      var refXstart = newMarker.attr('refXstart');                                              
+      var refYstart = newMarker.attr('refYstart');
+      var refXend = newMarker.attr('refXend');
+      var refYend = newMarker.attr('refYend');  
+      var viewBox = newMarker.attr('viewBox');
 
-        var parent = document.querySelector('#' + startId);
-        var docElClone = pathvisiojs.utilities.clone(svgXml.documentElement);
-        parent.appendChild(svgXml.documentElement);
+      marker.attr('viewBox', viewBox)
+      .attr('markerWidth', width)
+      .attr('markerHeight', height)
+      .attr('markerUnits', 'strokeWidth')
+      .attr('orient', 'auto');
 
-        markerEnd.attr('viewBox', -1*width + ' ' + -1*height + ' ' + width + ' ' + height)
-        .attr('markerWidth', width)
-        .attr('markerHeight', height)
-        .attr('markerUnits', 'strokeWidth')
-        .attr('orient', 'auto')
-        .attr('refX', 0)
-        .attr('refY', -1*height/2);
-        var g = markerEnd.append('g')
-        .attr('id', 'g-' + endId)
-        .attr('style', '-webkit-transform: rotate(180deg); -webkit-transform-origin: 50% 50%;');
-        // TODO the transform attribute used is specific to chrome. we need ot add the transform attributes for other browsers
-        // check for this on MDN.
-        var endG = document.querySelector('#' + 'g-' + endId);
-        endG.appendChild(docElClone);
+      if (rotate){
+	//end marker
+        marker.attr('refX', refXend)
+        .attr('refY', refYend);
+        marker.append('g')
+        .attr('id', 'g-' + markerId)
+        .attr('class', markerClass)
+        .attr('style', '-webkit-transform: rotate(180deg); -webkit-transform-origin: 50% 50%;')
+        ;
+      } else {
+	//start marker
+        marker.attr('refX', refXstart)
+        .attr('refY', refYstart);
 
-        //*
-        //var markerEnd = pathvisiojs.utilities.cloneNode('#' + startId);
-        //markerEnd[0][0].setAttribute('id', endId);
-        //markerEnd[0][0].setAttribute('transform', 'rotate(180deg)');
-        //*/
-        callback(null);
-      });
-    }
-    else {
+        marker.append('g')
+        .attr('id', 'g-' + markerId)
+        .attr('class', markerClass);
+      }
+
+      var g = document.querySelector('#' + 'g-' + markerId);
+
+      var newMarkerChildren = newMarker[0][0].children;
+      do {
+        g.appendChild(newMarkerChildren[0]);
+      } while (newMarkerChildren.length > 0);
+    });
+  }
+
+//    }
+//    else {
       // note that HTML uses 'img' while SVG uses 'image'
       // we need to get the dimensions of the image we are adding to the new symbol,
       // so we'll create an img element in HTML to check width and height
@@ -123,7 +148,7 @@ pathvisiojs.view.pathwayDiagram.svg.edge.marker = function(){
   <image xlink:href="http://wikipathways.github.io/pathvisiojs/src/views/markers/mim-binding.svg" x="0" y="0" width="12" height="12"></image>
 	</marker>
 //*/
-
+/*
       img = document.createElement('img');
       img.id = idStub;
       img.src = uniqueMarkerShapeUrl;
@@ -171,6 +196,7 @@ pathvisiojs.view.pathwayDiagram.svg.edge.marker = function(){
       }
     }
   }
+*/
 
   function loadAllCustom(thisSvg, customMarkers, callback) {
     svg = thisSvg;
@@ -180,11 +206,18 @@ pathvisiojs.view.pathwayDiagram.svg.edge.marker = function(){
     var dimensions = null;
     var dimensionSet = [];
 
+    var semanticName;
+    var markerUrl;
+    var paramCaseUrl;
     var uniqueMarkerShapeUrls = [];
     customMarkers.forEach(function(customMarker){
-      pathvisiojs.view.pathwayDiagram.svg.edge.marker.semanticNameToIdMapping[customMarker.semanticName] = strcase.paramCase(customMarker.url);
-      if (uniqueMarkerShapeUrls.indexOf(customMarker.url) === -1) {
-        uniqueMarkerShapeUrls.push(customMarker.url);
+      semanticName = customMarker.semanticName;
+      markerUrl = customMarker.url;
+      paramCaseUrl = strcase.paramCase(markerUrl);
+      pathvisiojs.view.pathwayDiagram.svg.edge.marker.semanticNameToIdMapping[semanticName] = paramCaseUrl;
+      pathvisiojs.view.pathwayDiagram.svg.edge.marker.colorsAvailable[paramCaseUrl] = ['default'];
+      if (uniqueMarkerShapeUrls.indexOf(markerUrl) === -1) {
+        uniqueMarkerShapeUrls.push(markerUrl);
       }
     });
 
@@ -194,201 +227,58 @@ pathvisiojs.view.pathwayDiagram.svg.edge.marker = function(){
     });
   }
 
-  function render(svg, name, position, color) {
-    var markerId;
-    var markerIdStub = pathvisiojs.view.pathwayDiagram.svg.edge.marker.semanticNameToIdMapping[name];
+  function appendNonDefaultColorMarkerBothEnds(svg, markerIdStub, color, callback) {
+    appendNonDefaultColorMarker(svg, markerIdStub, 'start', color, function() {
+      appendNonDefaultColorMarker(svg, markerIdStub, 'end', color, function() {
+        pathvisiojs.view.pathwayDiagram.svg.edge.marker.colorsAvailable[markerIdStub].push(color);
+        callback();
+      })
+    })
+  }
 
-    // if no marker is to be used, JSON data will specify 'none'.
+  function appendNonDefaultColorMarker(svg, markerIdStub, position, color, callback) {
+    var defaultId = markerIdStub + '-' + position + '-default';
+    var marker = pathvisiojs.utilities.cloneNode('#' + defaultId);
 
-    if (name === 'none') {
-      markerId = name;
-    }
-    else {
-
-      // check for whether the desired marker is defined once in the pathway template svg.
-
-      var selector = 'marker#' + markerIdStub + '-' + position + '-default';
-      var markerElementDefault = svg.select(selector);
-
-      if (markerElementDefault.length === 1) {
-
-        // if the desired stroke color is not specified, use the default marker specified in the pathway template svg.
-
-        if ( !(color) ) {
-          markerId = markerIdStub + '-' + position + '-default';
-        }
-
-        // else create a new marker with the desired color
-
-        else {
-          /*
-          var pathway.svg = d3.select("#pathway-container").select(function() {
-            return this.contentDocument.documentElement;
-          });
-          */
-
-          var markerElement = pathvisiojs.utilities.cloneNode(selector);
-          // TODO remove dependency on cloneNode and get the below working:
-          //var markerElement = pathvisiojs.utilities.clone(markerElementDefault[0][0]);
-
-          // define style of marker element's SVG
-
-          var markerElementStyle = '';
-
-          var markerElementSvg = markerElement.selectAll("svg")[0][0];
-
-          if (markerElementSvg.getAttribute('class').match(/default-stroke-color/)) {
-            markerElementStyle += 'stroke:#' + color + '; ';
-          }
-
-          if (markerElementSvg.getAttribute('class').match(/default-fill-color/)) {
-            markerElementStyle += 'fill:#' + color + '; ';
-          }
-
-          markerElement[0][0].setAttribute('id', markerIdStub + '-' + position + '-' + color );
-          markerElementSvg.setAttribute('style', markerElementStyle);
-
-          markerId = markerIdStub + '-' + position + '-' + color;
-        }
+    var defaultMarkerStart, refX, refY, viewBox, viewBoxElements;
+    if (position === 'end') {
+      console.log('end');
+      defaultMarkerStart = d3.select('#' + markerIdStub + '-start-default');
+      refX = parseFloat(defaultMarkerStart.attr('refX'));
+      refY = parseFloat(defaultMarkerStart.attr('refY'));
+      viewBox = defaultMarkerStart.attr('viewBox');
+      if (!!viewBox) {
+        viewBoxElements = viewBox.split(' ');
+        marker.attr('viewBox', (-1) * viewBoxElements[2] + ' ' + (-1) * viewBoxElements[3] + ' ' + viewBoxElements[2] + ' ' + viewBoxElements[3]);
       }
-      else {
-        markerId = 'none';
-        console.warn('Pathvisio.js does not have access to a marker (arrowhead) for the requested edge type: ' + name);
-      }
+      marker.attr('refX', refX)
+      marker.attr('refY', (-1) * refY)
     }
-    return markerId;
+
+    // define style of marker element's SVG
+
+    var markerContents = marker.select("g");
+    var markerStyle = markerContents.attr('style') || '';
+    if (markerContents.attr('class').match(/default-stroke-color/)) {
+      markerStyle += 'stroke:#' + color + '; ';
+    }
+
+    if (markerContents.attr('class').match(/default-fill-color/)) {
+      markerStyle += 'fill:#' + color + '; ';
+    }
+
+    var markerId = markerIdStub + '-' + position + '-' + color;
+    marker.attr('id', markerId);
+    markerContents.attr('id', strcase.paramCase('g-' + markerId));
+    markerContents.attr('style', markerStyle);
+
+    callback(markerId);
   }
  
   return {
-    render:render,
+    appendNonDefaultColorMarkerBothEnds:appendNonDefaultColorMarkerBothEnds,
+    loadAllCustom:loadAllCustom,
     semanticNameToIdMapping:semanticNameToIdMapping,
-    loadAllCustom:loadAllCustom
+    colorsAvailable:colorsAvailable
   };
 }();
-
-
-
-/*
-semanticNameToIdMapping = [
-  {
-    'semanticName': 'arrow',
-    'id':'shape-library-markers-arrow-svg'
-  },
-  {
-    'semanticName': 'necessary-stimulation',
-    'id':'shape-library-markers-mim-necessary-stimulation-svg'
-  },
-  {
-    'semanticName': 'binding',
-    'id':'shape-library-markers-mim-binding-svg'
-  },
-  {
-    'semanticName': 'conversion',
-    'id':'shape-library-markers-mim-conversion-svg'
-  },
-  {
-    'semanticName': 'stimulation',
-    'id':'shape-library-markers-mim-stimulation-svg'
-  },
-  {
-    'semanticName': 'modification',
-    'id':'shape-library-markers-mim-modification-svg'
-  },
-  {
-    'semanticName': 'catalysis',
-    'id':'shape-library-markers-mim-catalysis-svg'
-  },
-  {
-    'semanticName': 'inhibition',
-    'id':'shape-library-markers-mim-inhibition-svg'
-  },
-  {
-    'semanticName': 'cleavage',
-    'id':'shape-library-markers-mim-cleavage-svg'
-  },
-  {
-    'semanticName': 'covalent-bond',
-    'id':'shape-library-markers-mim-covalent-bond-svg'
-  },
-  {
-    'semanticName': 'transcription-translation',
-    'id':'shape-library-markers-mim-transcription-translation-svg'
-  },
-  {
-    'semanticName': 'gap',
-    'id':'shape-library-markers-mim-gap-svg'
-  },
-  {
-    'semanticName': 'inhibitory-activity',
-    'id':'shape-library-markers-t-bar-svg'
-  },
-  {
-    'semanticName': 'unspecified',
-    'id':'shape-library-markers-none-svg'
-  },
-  {
-    'semanticName': 'activity',
-    'id':'shape-library-markers-arrow-svg'
-  },
-  {
-    'semanticName': 'mim-branching-left',
-    'id':'shape-library-markers-mim-branching-left-svg'
-  },
-  {
-    'semanticName': 'mim-branching-right',
-    'id':'shape-library-markers-mim-branching-right-svg'
-  },
-  {
-    'semanticName': 'mim-necessary-stimulation',
-    'id':'shape-library-markers-mim-necessary-stimulation-svg'
-  },
-  {
-    'semanticName': 'mim-binding',
-    'id':'shape-library-markers-mim-binding-svg'
-  },
-  {
-    'semanticName': 'mim-conversion',
-    'id':'shape-library-markers-mim-conversion-svg'
-  },
-  {
-    'semanticName': 'mim-stimulation',
-    'id':'shape-library-markers-mim-stimulation-svg'
-  },
-  {
-    'semanticName': 'mim-modification',
-    'id':'shape-library-markers-mim-modification-svg'
-  },
-  {
-    'semanticName': 'mim-catalysis',
-    'id':'shape-library-markers-mim-catalysis-svg'
-  },
-  {
-    'semanticName': 'mim-inhibition',
-    'id':'shape-library-markers-mim-inhibition-svg'
-  },
-  {
-    'semanticName': 'mim-cleavage',
-    'id':'shape-library-markers-mim-cleavage-svg'
-  },
-  {
-    'semanticName': 'mim-covalent-bond',
-    'id':'shape-library-markers-mim-covalent-bond-svg'
-  },
-  {
-    'semanticName': 'mim-transcription-translation',
-    'id':'shape-library-markers-mim-transcription-translation-svg'
-  },
-  {
-    'semanticName': 'mim-gap',
-    'id':'shape-library-markers-mim-gap-svg'
-  },
-  {
-    'semanticName': 't-bar',
-    'id':'shape-library-markers-t-bar-svg'
-  },
-  {
-    'semanticName': 'none',
-    'id':'shape-library-markers-none-svg'
-  }
-];
-//*/

@@ -20,6 +20,17 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
       pathwayWidth = args.pathway.image.width,
       pathwayHeight = args.pathway.image.height;
 
+    //add loading gif
+    var container = d3.select('body').select('#pathway-container');
+    var posX = containerWidth/2;
+    var posY = containerHeight/2;
+    var img = container.append('img');
+    img.attr('src', "../src/img/loading.gif")
+    .attr('width', 50)
+    .style('position', "absolute")
+    .style('top', posY + "px")
+    .style('left', posX + "px");
+
     if (!svg) {
       throw new Error("Missing svg.");
     }
@@ -34,7 +45,8 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
         })
       },
       function(callback) {
-        d3.select('#loading-icon').remove();
+	//remove loading gif
+        container.select('img').remove();
 
         var initialClickHappened = false;
         svg.on("click", function(d, i){
@@ -143,42 +155,50 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
   // other elements, this function will call itself back to render
   // the elements within the groupNode.
   function renderSelectedElementsFast(args, callbackOutside){
-    console.log('args');
+    console.log('renderSelectedElementsFast args');
     console.log(args);
-    if (!args.container) {
+    var svg = args.svg,
+      data = args.data,
+      pathway = args.pathway,
+      container = args.container;
+
+    if (!container) {
       throw new Error("No container specified.");
     }
-    if (!args.data) {
+    if (!data) {
       throw new Error("No data entered to render.");
     }
-    if (!args.svg) {
+    if (!svg) {
       throw new Error("No svg specified.");
     }
-    if (!args.pathway) {
+    if (!pathway) {
       throw new Error("No pathway specified.");
     } 
+    data = pathvisiojs.utilities.convertToArray(data);
 
     var contextLevelInput = pathvisiojs.utilities.clone(pathvisiojs.context);
     contextLevelInput.dependsOn = "ex:dependsOn";
 
     async.waterfall([
       function(callback) {
-        args.data.sort(function(a, b) {
+        data.sort(function(a, b) {
           return a.zIndex - b.zIndex;
         });
-        callback(null, args.data);
+        callback(null, data);
       },
-      function(data, callback) {
-        data.forEach(function(element) {
+      function(sortedData, callback) {
+        var renderingArgs = args;
+        sortedData.forEach(function(element) {
+          renderingArgs.data = element;
           if (element.renderableType === 'GroupNode') {
-            args.data = element;
             pathvisiojs.view.pathwayDiagram.svg.node.groupNode.render(args, function(groupContainer, groupContents) {
-
-              var groupedElementsArgs = {};
-              groupedElementsArgs.svg = args.svg;
+              var groupedElementsArgs = renderingArgs;
+              groupedElementsArgs.svg = svg;
               groupedElementsArgs.container = groupContainer;
               groupedElementsArgs.data = groupContents;
-              groupedElementsArgs.pathway = args.pathway;
+              console.log('groupContents');
+              console.log(groupContents);
+              groupedElementsArgs.pathway = pathway;
 
               // recursively calling this function to render elements within groupNode(s)
               pathvisiojs.view.pathwayDiagram.svg.renderSelectedElementsFast(groupedElementsArgs, function() {
@@ -202,17 +222,16 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
             });
           }
           else {
-            args.data = element;
             if (element.renderableType === 'EntityNode') {
-              pathvisiojs.view.pathwayDiagram.svg.node.EntityNode.render(args);
+              pathvisiojs.view.pathwayDiagram.svg.node.EntityNode.render(renderingArgs);
             }
             else {
               if (element.renderableType === 'Interaction') {
-                pathvisiojs.view.pathwayDiagram.svg.edge.interaction.render(args);
+                pathvisiojs.view.pathwayDiagram.svg.edge.interaction.render(renderingArgs);
               }
               else {
                 if (element.renderableType === 'GraphicalLine') {
-                  pathvisiojs.view.pathwayDiagram.svg.edge.graphicalLine.render(args);
+                  pathvisiojs.view.pathwayDiagram.svg.edge.graphicalLine.render(renderingArgs);
                 }
               }
             }
@@ -252,10 +271,11 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
         var firstOrderFrame = {
           '@context': pathvisiojs.context,
           '@type':['notGrouped', 'GroupNode'],
-          'contains': {},
-          'InteractionGraph': {}
+          'contains':{}
         };
         jsonld.frame(pathway, firstOrderFrame, function(err, firstOrderData) {
+          console.log('firstOrderData');
+          console.log(firstOrderData['@graph']);
           callbackInside(null, firstOrderData['@graph']);
         });
       }

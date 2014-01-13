@@ -13,11 +13,12 @@ pathvisiojs.data.gpml.edge = function(){
     jsonEdge['@id'] = elementIri;
     jsonEdge.GraphId = graphId;
 
-    var isContainedBy = gpmlEdge.attr('GroupRef');
+    var containingGroupRef = gpmlEdge.attr('GroupRef');
+    var isContainedBy;
     var dependsOn = [];
-    if (!!isContainedBy) {
-      jsonEdge.isContainedBy = isContainedBy;
-      dependsOn.push(pathwayIri + isContainedBy);
+    if (!!containingGroupRef) {
+      isContainedBy = jsonEdge.isContainedBy = pathwayIri + containingGroupRef;
+      dependsOn.push(isContainedBy);
     }
 
     jsonEdge.zIndex = parseFloat(gpmlEdge.select('Graphics').attr('ZOrder'));
@@ -72,6 +73,7 @@ pathvisiojs.data.gpml.edge = function(){
       jsonEdge['strokeWidth'] = parseFloat(strokeWidth);
     }
 
+    /*
     var jsonAnchorEdges = gpmlEdge.selectAll('Anchor');
     if (jsonAnchorEdges[0].length > 0) {
       jsonEdge.Anchor = [];
@@ -90,8 +92,12 @@ pathvisiojs.data.gpml.edge = function(){
         jsonEdge.Anchor.push(jsonAnchorEdge);
       })
     }
-    pathvisiojs.data.gpml.element.toRenderableJson(gpmlEdge, jsonEdge, function(jsonEdge) {
-      callback(jsonEdge);
+    //*/
+
+    pathvisiojs.data.gpml.node.anchor.toRenderableJson(gpmlEdge, jsonEdge, 'edge', pathwayIri, function(jsonEdge) {
+      pathvisiojs.data.gpml.element.toRenderableJson(gpmlEdge, jsonEdge, function(jsonEdge) {
+        callback(jsonEdge);
+      });
     });
   }
 
