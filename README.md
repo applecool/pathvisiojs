@@ -21,11 +21,11 @@ $ git checkout -f gh-pages
 B. Merge in code from master branch:
 
 ```
-$ git checkout ./build/
-$ git checkout ./lib/
-$ git checkout ./src/
-$ git checkout ./config/
-$ git checkout ./test/
+$ git checkout master ./build/
+$ git checkout master ./lib/
+$ git checkout master ./src/
+$ git checkout master ./config/
+$ git checkout master ./test/
 ```
 
 C. Pull changes from github. Use the remote name you have set up for the wikipathways repo, if it's not origin.
