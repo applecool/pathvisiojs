@@ -89,8 +89,6 @@ function updateParams(updatedParam) {
 }
 
 function generateHtmlView(callback) {
-  console.log('srcDirectoryUrl');
-  console.log(srcDirectoryUrl);
   d3.html(srcDirectoryUrl + 'pathvisiojs.html', function(html) {
     var svg = html.querySelector('#pathway-svg');
     svg.setAttribute('style', 'display: none; ');
@@ -104,6 +102,7 @@ function generateHtmlView(callback) {
 }
 
 /*
+ * moved this into compare.html
 function loadExtJsCss(callbackOutside) {
   async.parallel([
     function(callback) {
@@ -118,6 +117,10 @@ function loadExtJsCss(callbackOutside) {
   function(callback) {
     loadScripts([
       srcDirectoryUrl + 'js/pathvisiojs/pathvisio.js',
+      //srcDirectoryUrl + '../config/default.js',
+      srcDirectoryUrl + '../config/devserver.js',
+      //srcDirectoryUrl + '../config/www.wikipathways.org.js',
+      //srcDirectoryUrl + '../config/test3.wikipathways.org.js',
       srcDirectoryUrl + 'js/pathvisiojs/utilities.js',
       srcDirectoryUrl + 'js/pathvisiojs/data/data.js',
       srcDirectoryUrl + 'js/pathvisiojs/data/bridgedb/bridgedb.js',
@@ -158,6 +161,20 @@ function loadExtJsCss(callbackOutside) {
       srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/rounded-rectangle-double.js',
       srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/oval-double.js',
       srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/complex.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/endoplasmic-reticulum.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/sarcoplasmic-reticulum.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/golgi-apparatus.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/mitochondria.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/arc.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/brace.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/grid-square.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/hexagon.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/mim-degradation.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/none.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/oval.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/pentagon.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/rectangle.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/triangle.js',
       srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/text.js',
       srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/group-node.js',
       srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/use-element.js',
@@ -182,11 +199,7 @@ function loadExtJsCss(callbackOutside) {
 
 var urlParamList = getUrlParamList();
 var currentUrl = document.location;
-console.log('currentUrl');
-console.log(currentUrl);
 var pathvisiojsRootDirectoryUrl = document.location.pathname.split('test/compare.html')[0];
-console.log('pathvisiojsRootDirectoryUrl');
-console.log(pathvisiojsRootDirectoryUrl);
 var srcDirectoryUrl = (pathvisiojsRootDirectoryUrl + 'src/');
 
 /*********************************************
@@ -212,72 +225,19 @@ window.onload = function() {
     loadExtJsCss(function() {
       callback(null);
     });
-  }//*/
-  ],
+  }//*/],
   function(err) {
     // Specify an image for each semantic element you would like to customize.
     // If no image is specified for a semantic element, the default will be used.
     // You can use the same image for multiple semantic elements if you choose to,
     // but every semanticName must be unique.
-    var customSymbols = [
-      {
-        'semanticName': 'arc',
-        'url': srcDirectoryUrl + 'shape-library/symbols/arc.svg'
-      },
-      {
-        'semanticName': 'brace',
-        'url': srcDirectoryUrl + 'shape-library/symbols/brace.svg'
-      },
-      {
-        'semanticName': 'endoplasmic-reticulum',
-        'url': srcDirectoryUrl + 'shape-library/symbols/endoplasmic-reticulum.svg'
-      },
-      {
-        'semanticName': 'golgi-apparatus',
-        'url': srcDirectoryUrl + 'shape-library/symbols/golgi-apparatus.svg'
-      },
-      {
-        'semanticName': 'hexagon',
-        'url': srcDirectoryUrl + 'shape-library/symbols/hexagon.svg'
-      },
-      {
-        'semanticName': 'mim-degradation',
-        'url': srcDirectoryUrl + 'shape-library/symbols/mim-degradation.svg'
-      },
-      {
-        'semanticName': 'mitochondria',
-        'url': srcDirectoryUrl + 'shape-library/symbols/mitochondria.svg'
-      },
-      {
-        'semanticName': 'circle',
-        'url': srcDirectoryUrl + 'shape-library/symbols/oval.svg'
-      },
-      {
-        'semanticName': 'oval',
-        'url': srcDirectoryUrl + 'shape-library/symbols/oval.svg'
-      },
-      {
-        'semanticName': 'pentagon',
-        'url': srcDirectoryUrl + 'shape-library/symbols/pentagon.svg'
-      },
+ /*   var customSymbols = [
       {
         'semanticName': 'rectangle',
         'url': srcDirectoryUrl + 'shape-library/symbols/rectangle.svg'
-      },
-      {
-        'semanticName': 'sarcoplasmic-reticulum',
-        'url': srcDirectoryUrl + 'shape-library/symbols/sarcoplasmic-reticulum.svg'
-      },
-      {
-        'semanticName': 'triangle',
-        'url': srcDirectoryUrl + 'shape-library/symbols/triangle.svg'
-      },
-      {
-        'semanticName': 'none',
-        'url': srcDirectoryUrl + 'shape-library/symbols/none.svg'
       }
     ];
-
+//*/
     var customMarkers = self.customMarkers = [
       {
         'semanticName': 'arrow',
@@ -414,7 +374,7 @@ window.onload = function() {
       //gpmlRev: urlParamList.gpmlRev,
       cssUrl: srcDirectoryUrl + 'css/pathway-diagram.css',
       customMarkers: customMarkers,
-      customSymbols: customSymbols,
+      //customSymbols: customSymbols,
       highlightNodes: [
         {'parameter': 'label', 'parameterValue': 'CRH', 'color': 'red'},
         {'parameter': 'xref', 'parameterValue': '8525,Entrez%20Gene', 'color': '#FF0000'}
