@@ -24,6 +24,7 @@ B. Merge in code from master branch:
 $ git checkout ./build/
 $ git checkout ./lib/
 $ git checkout ./src/
+$ git checkout ./config/
 $ git checkout ./test/
 ```
 
