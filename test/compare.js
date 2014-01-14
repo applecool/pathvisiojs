@@ -89,6 +89,8 @@ function updateParams(updatedParam) {
 }
 
 function generateHtmlView(callback) {
+  console.log('srcDirectoryUrl');
+  console.log(srcDirectoryUrl);
   d3.html(srcDirectoryUrl + 'pathvisiojs.html', function(html) {
     var svg = html.querySelector('#pathway-svg');
     svg.setAttribute('style', 'display: none; ');
@@ -101,6 +103,7 @@ function generateHtmlView(callback) {
   });
 }
 
+/*
 function loadExtJsCss(callbackOutside) {
   async.parallel([
     function(callback) {
@@ -175,10 +178,15 @@ function loadExtJsCss(callbackOutside) {
     callbackOutside();
   })
 }
+//*/
 
 var urlParamList = getUrlParamList();
-var currentUrl = document.location.origin + document.location.pathname;
-var pathvisiojsRootDirectoryUrl = document.location.origin + document.location.pathname.split('test/compare.html')[0];
+var currentUrl = document.location;
+console.log('currentUrl');
+console.log(currentUrl);
+var pathvisiojsRootDirectoryUrl = document.location.pathname.split('test/compare.html')[0];
+console.log('pathvisiojsRootDirectoryUrl');
+console.log(pathvisiojsRootDirectoryUrl);
 var srcDirectoryUrl = (pathvisiojsRootDirectoryUrl + 'src/');
 
 /*********************************************
@@ -199,12 +207,13 @@ window.onload = function() {
     generateHtmlView(function() {
       callback(null);
     });
-  },
+  }/*,
   function(callback) {
     loadExtJsCss(function() {
       callback(null);
     });
-  }],
+  }//*/
+  ],
   function(err) {
     // Specify an image for each semantic element you would like to customize.
     // If no image is specified for a semantic element, the default will be used.
