@@ -38,6 +38,7 @@ D. Edit any of the gh-pages-specific content
 E. Pull changes from github and push to github. Use the remote name you have set up for the wikipathways repo, if it's not origin.
 
 ```
+$ git pull origin gh-pages
 $ git push origin gh-pages
 ```
 
