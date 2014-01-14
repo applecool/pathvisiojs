@@ -33,7 +33,8 @@ C. Pull changes from github. Use the remote name you have set up for the wikipat
 $ git pull origin gh-pages
 ```
 
-D. Edit any of the gh-pages specific content
+D. Edit any of the gh-pages-specific content
+
 E. Pull changes from github and push to github. Use the remote name you have set up for the wikipathways repo, if it's not origin.
 
 ```
