@@ -85,6 +85,99 @@ function generateHtmlView(callback) {
   });
 }
 
+<<<<<<< HEAD
+=======
+function loadExtJsCss(callbackOutside) {
+  async.parallel([
+    function(callback) {
+    loadJsCssFile(srcDirectoryUrl + 'css/pathvisiojs.css', 'css', callback);
+  },
+  function(callback) {
+    loadJsCssFile(srcDirectoryUrl + 'css/annotation.css', 'css', callback);
+  },
+  function(callback) {
+    loadJsCssFile(srcDirectoryUrl + 'css/pan-zoom.css', 'css', callback);
+  },
+  function(callback) {
+    loadScripts([
+      srcDirectoryUrl + 'js/pathvisiojs/pathvisio.js',
+      srcDirectoryUrl + 'js/pathvisiojs/utilities.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/data.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/bridgedb/bridgedb.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/bridgedb/data-sources.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/biopax/biopax.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/gpml.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/element.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/text.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/namespaces.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/biopax-ref.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/node/node.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/node/group-node.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/node/entity-node/entity-node.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/node/entity-node/data-node.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/node/entity-node/label.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/node/entity-node/shape.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/node/anchor.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/edge/edge.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/edge/interaction.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/edge/graphical-line.js',
+      srcDirectoryUrl + 'js/pathvisiojs/data/gpml/edge/point.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/view.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/annotation/annotation.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/annotation/citation.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/annotation/x-ref.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/pathway-diagram.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/path-finder.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/svg.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/grid.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/info-box.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/symbol.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/publication-xref.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/node.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/anchor.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/entity-node.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/path-shape.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/rounded-rectangle.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/rounded-rectangle-double.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/oval-double.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/complex.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/endoplasmic-reticulum.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/sarcoplasmic-reticulum.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/golgi-apparatus.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/mitochondria.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/arc.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/brace.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/grid-square.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/hexagon.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/mim-degradation.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/none.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/oval.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/pentagon.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/rectangle.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/path-shape/triangle.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/text.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/group-node.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/node/use-element.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/edge/edge.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/edge/graphical-line.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/edge/interaction.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/edge/marker.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/edge/point.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/edge/path-data.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/svg/edge/path.js',
+      srcDirectoryUrl + 'js/pathvisiojs/view/pathway-diagram/png/png.js'
+    ],
+    function(){
+      callback(null);
+    });
+  }
+  ],
+  function(err, results){
+    callbackOutside();
+  })
+}
+
+>>>>>>> d52ce87c67b822846811c3c4d75fedf27fb6d735
 var urlParamList = getUrlParamList();
 
 var hostname = decodeURI(window.location.hostname);
