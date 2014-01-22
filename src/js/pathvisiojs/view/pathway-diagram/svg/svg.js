@@ -21,6 +21,7 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
       pathwayHeight = args.pathway.image.height;
 
     //add loading gif
+    // TODO this should probably use the args.container variable and not redefine a new container
     var container = d3.select('body').select('#pathway-container');
     var posX = containerWidth/2;
     var posY = containerHeight/2;
@@ -87,7 +88,7 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
 
 	var fullscreen = d3.select('body').select('#fullscreen-control');
 	fullscreen.on("click", function(d,i){
-          var pvjs = document.getElementById("pathvisio-js-dev").innerHTML;
+          var pvjs = document.getElementById("pathvisiojs-dev").innerHTML;
           var newwin = window.open('','','width=800,height=600');
           var doc = newwin.document;
 	  doc.open();
@@ -118,7 +119,7 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
     async.series([
       function(callback) {
         container.html(pathvisioNS['tmp/pathvisiojs.html']);
-        pathvisioJsContainer = container.select('#pathvisio-js-container');
+        pathvisioJsContainer = container.select('#pathvisiojs-container');
         pathwayContainer = pathvisioJsContainer.select('#pathway-container')
 
         svg = pathvisioJsContainer.select('#pathway-svg')
@@ -285,11 +286,8 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
           '@context': pathvisiojs.context,
           '@type':['notGrouped', 'GroupNode']
         };
-        jsonld.frame(pathway, firstOrderFrame, function(err, firstOrderData) {
-          console.log('firstOrderData');
-          console.log(firstOrderData['@graph']);
-          callbackInside(null, firstOrderData['@graph']);
-        });
+	var newFrame = frameIt(pathway);
+          callbackInside(null, newFrame['@graph']);
       }
     },
     function(err, results) {
@@ -309,7 +307,41 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
         console.log(new Date());
         callback(svg);
       });
-
+    })
+  }
+  function frameIt(pathway){
+	var nf = new Object({'@context': pathvisiojs.context});
+	var arr = new Array();
+        if(pathway.DataNode){
+          for (var i=0; i<pathway.DataNode.length; i++){
+	    if(!pathway.DataNode[i].isContainedBy){
+              arr.push(pathway.DataNode[i]);
+	    }
+          }
+        }
+        if(pathway.Shape){
+          for (var i=0; i<pathway.Shape.length; i++){
+            arr.push(pathway.Shape[i]);
+          }
+        }
+        if(pathway.Label){
+          for (var i=0; i<pathway.Label.length; i++){
+            arr.push(pathway.Label[i]);
+          }
+        }
+        if(pathway.Interaction){
+          for (var i=0; i<pathway.Interaction.length; i++){
+            arr.push(pathway.Interaction[i]);
+          }
+        }
+	if(pathway.Group){
+          for (var i=0; i<pathway.Group.length; i++){
+            arr.push(pathway.Group[i]);
+          }
+	}
+	nf['@graph'] = arr; 
+	return nf;
+  }
 
       //pathvisiojs.view.pathwayDiagram.svg.grid.render(svg);
 
@@ -336,10 +368,9 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
       function(err, results) {
         callback(svg);
       })
-      //*/
     })
   }
-
+  //*/
   /*
   function render(args, callback){
     if (!args.svg) {
