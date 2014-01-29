@@ -1,9 +1,11 @@
 var module = {};
-var srcDirectoryUrl;
+var srcDirectoryUri;
 var pvjsSources;
-var pathvisioNS = [];
+var pathvisioNS = pathvisioNS || {};
 
 var developmentLoader = function() {
+  var oSerializer = new XMLSerializer();
+
   /* *******************
   /* Get the desired GPML file URL or WikiPathways ID from the URL parameters.
   /* *******************/
@@ -13,7 +15,7 @@ var developmentLoader = function() {
 
   function getUriParam(name) {
 
-    // Thanks to http://stackoverflow.com/questions/11582512/how-to-get-url-parameters-with-javascript
+    // Thanks to http://stackoverflow.com/questions/11582512/how-to-get-uri-parameters-with-javascript
     // This will be replaced once we get the backend php to get the GPML
 
     var parameter = decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
@@ -26,7 +28,7 @@ var developmentLoader = function() {
   }
 
   function getUriParamList() {
-    urlParamList = {
+    uriParamList = {
       'svg-disabled': false,
       'gpml': null,
       'gpmlRev': 0,
@@ -34,26 +36,26 @@ var developmentLoader = function() {
       'account': '',
       'branch': ''
     };
-    Object.keys(urlParamList).forEach(function(element) {
+    Object.keys(uriParamList).forEach(function(element) {
       if (!!getUriParam(element)) {
-        urlParamList[element] = getUriParam(element);
+        uriParamList[element] = getUriParam(element);
       }
       window.setTimeout(function() {
-        $('#' + element).val(urlParamList[element]);
+        $('#' + element).val(uriParamList[element]);
       }, 50)
     });
-    return urlParamList;
+    return uriParamList;
   }
 
   function updateParams(updatedParam) {
     var targetUri = currentUri + '?' + updatedParam.key + '=' + updatedParam.value;
 
-    Object.keys(urlParamList).forEach(function(element) {
+    Object.keys(uriParamList).forEach(function(element) {
       if (element === updatedParam.key) {
-        urlParamList[element] = updatedParam.value;
+        uriParamList[element] = updatedParam.value;
       }
       else {
-        targetUri += '&' + element + '=' + urlParamList[element];
+        targetUri += '&' + element + '=' + uriParamList[element];
       }
     });
 
@@ -72,27 +74,28 @@ var developmentLoader = function() {
     // object we will return
     var parsedInputData = {};
     parsedInputData.sourceData = [];
+    var uri;
 
     var svgDisabled = parsedInputData.svgDisabled = uriParams['svg-disabled'] || false;
     var gpmlParam = uriParams.gpml; // this might be equal to the value of uriParams.gpml, but it might not.
 
+    var wpId, wpRevision, gpmlUri, pngUri;
 
-
-    var wpId, wpRevision, gpmlUri, pngUrl;
-
-    if (pathvisiojs.utilities.isUrl(gpmlParam)) {
+    if (pathvisiojs.utilities.isUri(gpmlParam)) {
+      uri = gpmlParam;
       if (uri.indexOf('.gpml') > -1) {
         parsedInputData.sourceData.push({
           uri:gpmlParam,
-          mimeType:'application/xml+gpml'
+          fileType:'gpml'
         });
 
-        pngUri = pathvisiojs.config.diagramNotAvailableImageUri();
+        pngUri = pathvisiojs.config.diagramNotAvailableIconUri;
         parsedInputData.sourceData.push({
           uri:pngUri,
-          mimeType:'image/png'
+          fileType:'png'
         });
 
+        console.log(parsedInputData);
         callback(parsedInputData);
       }
       else {
@@ -106,17 +109,18 @@ var developmentLoader = function() {
         gpmlUri = getGpmlUri(gpmlParam, wpRevision); //get uri
         parsedInputData.sourceData.push({
           uri:gpmlUri,
-          mimeType:'application/xml+gpml'
+          fileType:'gpml'
         });
 
-        pngUri = encodeURI(pathvisiojs.config.pngDiagramUriStub() + gpmlParam + '&revision=' + wpRevision);
+        pngUri = encodeURI('http://www.wikipathways.org/wpi//wpi.php?action=downloadFile&type=png&pwTitle=Pathway:' + gpmlParam + '&revision=' + wpRevision);
         parsedInputData.sourceData.push({
           uri:pngUri,
-          mimeType:'image/png'
+          fileType:'png'
         });
 
         parsedInputData.wpId = gpmlParam;
         parsedInputData.revision = wpRevision;
+        console.log(parsedInputData);
         callback(parsedInputData);
       }
       else {
@@ -142,7 +146,7 @@ var developmentLoader = function() {
         gpmlUri = PathwayViewer_viewers[0].gpml.gpmlUri; // TODO we are not handling multiple pathways on one page here
       }
       else {
-        gpmlUri = pathvisiojs.config.gpmlSourceUriStub() + wpId + '&rev=' + revision;
+        gpmlUri = 'http://pointer.ucsf.edu/d3/r/data-sources/gpml.php?id=' + wpId + '&rev=' + revision;
       }
     }
     else {
@@ -155,9 +159,9 @@ var developmentLoader = function() {
   }
 
 
-  function getUrlParam(name) {
+  function getUriParam(name) {
 
-    // Thanks to http://stackoverflow.com/questions/11582512/how-to-get-url-parameters-with-javascript
+    // Thanks to http://stackoverflow.com/questions/11582512/how-to-get-uri-parameters-with-javascript
     // This will be replaced once we get the backend php to get the json
 
     var parameter = decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
@@ -191,26 +195,74 @@ var developmentLoader = function() {
   }
 
   function updateParams(updatedParam) {
-    var targetUrl = currentUrl + '?' + updatedParam.key + '=' + updatedParam.value;
+    var targetUri = currentUri + '?' + updatedParam.key + '=' + updatedParam.value;
 
-    Object.keys(urlParamList).forEach(function(element) {
+    Object.keys(uriParamList).forEach(function(element) {
       if (element === updatedParam.key) {
-        urlParamList[element] = updatedParam.value;
+        uriParamList[element] = updatedParam.value;
       }
       else {
-        targetUrl += '&' + element + '=' + urlParamList[element];
+        targetUri += '&' + element + '=' + uriParamList[element];
       }
     });
 
-    location.href = targetUrl;
+    location.href = targetUri;
   }
 
-  function generateHtmlView(callback) {
-    d3.html(srcDirectoryUrl + 'pathvisiojs.html', function(html) {
-      var svg = html.querySelector('#pathway-svg');
-      svg.setAttribute('style', 'display: none; ');
+  function generateSvgTemplate(callback) {
+    var docFragment = document.createDocumentFragment();
+    var svg = d3.select(docFragment).append('svg').
+    attr('id', 'pathvisiojs-diagram').
+    attr('version', '1.1').
+    attr('baseProfile', 'full').
+    attr('xmlns', 'http://www.w3.org/2000/svg').
+    attr('xmlns:xmlns:xlink', 'http://www.w3.org/1999/xlink').
+    attr('xmlns:xmlns:ev', 'http://www.w3.org/2001/xml-events').
+    attr('width', '100%').
+    attr('height', '100%').
+    attr('style', 'display: none; ');
 
-      var oSerializer = new XMLSerializer();
+    var g = svg.append('g')
+
+    var title = svg.append('title').
+    text('pathvisiojs diagram');
+
+    var desc = g.append('desc').
+    text('This SVG file contains all the graphical elements (markers and symbols in defs as well as\nstyle data) used by the program pathvisiojs, which has two components:\n1) a viewer for transforming GPML biological pathway data into an SVG visual representation and\n2) an editor for creating both views and models for biological pathways.');
+
+    var defs = svg.append('defs');
+
+    var filter = svg.append('filter').
+    attr('id', 'highlight').
+    attr('width', '150%').
+    attr('height', '150%');
+
+    filter.append('feOffset').
+    attr('result', 'offOut').
+    attr('in', 'SourceGraphic').
+    attr('dx', '30').
+    attr('dy', '30');
+
+    filter.append('feGaussianBlur').
+    attr('result', 'blurOut').
+    attr('in', 'offOut').
+    attr('stdDeviation', '10');
+
+    filter.append('feBlend').
+    attr('in', 'SourceGraphic').
+    attr('in2', 'blurOut').
+    attr('mode', 'normal');
+
+    var viewport = svg.append('g').
+    attr('id', 'viewport');
+
+    var oSerializer = new XMLSerializer();
+    pathvisioNS['tmp/pathvisiojs.svg'] = oSerializer.serializeToString(svg[0][0]);
+    callback();
+  }
+
+  function generateHtmlTemplate(callback) {
+    d3.html(srcDirectoryUri + 'pathvisiojs.html', function(html) {
       pathvisioNS['tmp/pathvisiojs.html'] = oSerializer.serializeToString(html);
       callback();
     });
@@ -219,23 +271,23 @@ var developmentLoader = function() {
   function preload(outsideCallback) {
     var hostname = decodeURI(window.location.hostname);
 
-    var currentUrl = document.location;
+    var currentUri = document.location;
     var pathname = document.location.pathname;
-    var pathvisiojsRootDirectoryUrl = pathname.split('test/compare.html')[0];
-    srcDirectoryUrl = (pathvisiojsRootDirectoryUrl + 'src/');
-
+    var pathvisiojsRootDirectoryUri = pathname.split('test/development.html')[0];
+    srcDirectoryUri = (pathvisiojsRootDirectoryUri + 'src/');
 
     async.waterfall([
       function(callback) {
-        var gruntFileUrl = '../Gruntfile.js'; // just for testing/development purposes
-        loadScripts([gruntFileUrl], function() {
+        var gruntFileUri = '../Gruntfile.js'; // just for testing/development purposes
+        loadScripts([gruntFileUri], function() {
           callback(null);
         });
       },
       function(callback) {
-        if (pathname.indexOf('compare.html') > -1) { //if this is the development version
+        if (pathname.indexOf('development.html') > -1) { //if this is the development version
           var pvjsSourcesDev = pvjsSources.slice(1); //this file is only used in the build process
 
+      /*
           // In dev mode, different servers will use different configs.
           // The code below sets this config file.
           // For production, we will use default.js for our default config settings and
@@ -260,6 +312,7 @@ var developmentLoader = function() {
           serverSpecificJsConfigFileName = strcase.paramCase(serverSpecificJsConfigFileName);
           pvjsSourcesDev[1] = 'config/' + serverSpecificJsConfigFileName + '.js';
 
+      //*/
           pvjsSourcesDev = pvjsSourcesDev.map(function(source) {
             return '../' + source;
           });
@@ -278,68 +331,86 @@ var developmentLoader = function() {
         });
       },
       function(parsedInputData, callback) {
-        if (pathname.indexOf('compare.html') > -1) { //if this is the development version
-          generateHtmlView(function() {
-            callback(null, parsedInputData);
+        if (parsedInputData.svgDisabled) {
+          Modernizr.svg = Modernizr.inlinesvg = false;
+          $('#svg-disabled').prop('checked', true);
+        }
+        if (pathname.indexOf('development.html') > -1) { //if this is the development version
+          generateHtmlTemplate(function() {
+            generateSvgTemplate(function() {
+              console.log(pathvisioNS);
+              outsideCallback(parsedInputData);
+            });
           });
         }
         else { //if this is the production version
-          callback(null, parsedInputData);
+          outsideCallback(parsedInputData);
         }
-      },
-      function(parsedInputData, callback) {
-        console.log(parsedInputData);
-        // test for whether urlParamList.gpml is a WikiPathways ID
-        // If it is not a WikiPathways ID, the WikiPathways widget will not be able to load the pathway.
-        if (!!parsedInputData.wpId) {
-          window.setTimeout(function() {
-            $('#current-wikipathways-viewer').prepend('<iframe id="current-wiki-pathways-widget" src="http://www.wikipathways.org/wpi/PathwayWidget.php?id=' + parsedInputData.wpId + '" width="500px" height="500px" />')
-            }, 50);
-        }
-        else {
-          console.warn('GPML data source specified is not a WP ID. WP widget cannot display this GPML data as a pathway image.');
-        }
-
-
-        if (parsedInputData.svgDisabled) {
-          Modernizr.svg = false;
-          $('#svg-disabled').prop('checked', true);
-        }
-
-        outsideCallback(parsedInputData);
       }
     ]);
   }
 
-  /* *******************
-  /* Until we finish automating the Grunt build process, we are manually getting the html template with this function.
-  /* *******************/
+  function loadFrames(inputData, callback) {
+    console.log(inputData);
+    window.setTimeout(function() {
+      inputData.forEach(function(inputDataElement) {
+        $('#' + inputDataElement.containerId).prepend('<iframe id="' + inputDataElement.containerId + '-frame" src="' + inputDataElement.frameSrc + '" style="width:inherit; height:inherit; margin:0; " />')
+      });
+      callback();
+    }, 50);
 
-  var getPathvisiojsHtmlTemplate = function() {
-    var svg = d3.select('#pathway-svg');
-    svg.select('#viewport').selectAll('*').remove();
-    var marker, oldMarkerId, newMarkerId;
-    var markers = svg.selectAll('marker');
-    markers.each(function() {
-      marker = d3.select(this);
-      oldMarkerId = marker.attr('id');
-      newMarkerId = 'shape-library' + oldMarkerId.split('-shape-library')[1];
-      marker.attr('id', newMarkerId);
-    });
-
-    var symbol, oldSymbolId, newSymbolId;
-    var symbols = svg.selectAll('symbol');
-    symbols.each(function() {
-      symbol = d3.select(this);
-      oldSymbolId = symbol.attr('id');
-      newSymbolId = 'shape-library' + oldSymbolId.split('-shape-library')[1];
-      symbol.attr('id', newSymbolId);
-    });
-    return d3.select('#pathvisiojs-container')[0][0];
+    //*
+    //*/
   }
 
   return{
     preload:preload,
+    loadFrames:loadFrames,
     parseUriParams:parseUriParams
   };
 }();
+
+/* *******************
+/* Until we finish automating the Grunt build process, we are manually getting the html template with this function.
+/* *******************/
+
+function copyToClipboard(text) {
+  window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
+}
+
+var getPathvisiojsHtmlTemplate = function() {
+  var html = pathvisiojs.utilities.cloneNode('#pathvisiojs-container');
+  html.select('svg').remove();
+  var html00 = html[0][0];
+
+  var oSerializer = new XMLSerializer();
+  var serializedHtml = oSerializer.serializeToString(html00);
+  console.log(serializedHtml);
+}
+
+var getPathvisiojsSvgTemplate = function() {
+  var svg = pathvisiojs.utilities.cloneNode('#pathvisiojs-diagram');
+  svg.select('#viewport').selectAll('*').remove();
+  var marker, oldMarkerId, newMarkerId;
+  var markers = svg.selectAll('marker');
+  markers.each(function() {
+    marker = d3.select(this);
+    oldMarkerId = marker.attr('id');
+    newMarkerId = 'shape-library' + oldMarkerId.split('-shape-library')[1];
+    marker.attr('id', newMarkerId);
+  });
+
+  var symbol, oldSymbolId, newSymbolId;
+  var symbols = svg.selectAll('symbol');
+  symbols.each(function() {
+    symbol = d3.select(this);
+    oldSymbolId = symbol.attr('id');
+    newSymbolId = 'shape-library' + oldSymbolId.split('-shape-library')[1];
+    symbol.attr('id', newSymbolId);
+  });
+  var svg00 = svg[0][0];
+  //thanks MDN
+  var oSerializer = new XMLSerializer();
+  var serializedSvg = oSerializer.serializeToString(svg00);
+  console.log(serializedSvg);
+}

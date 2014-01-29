@@ -4,22 +4,22 @@ pathvisiojs.data.pathvisiojsJson = function(){
   // GPML or has no type specified, into JSON.
   // TODO Later, this functionality can be extended to include other data types and
   // to test for data type when it is not specified.
-  function get(sourceData, callback) {
-    var uri = sourceData.uri;
-    var object = sourceData.object;
-    var mimeType = sourceData.mimeType;
+  function get(renderableSourceDataElement, callback) {
+    var uri = renderableSourceDataElement.uri;
+    var object = renderableSourceDataElement.object;
+    var fileType = renderableSourceDataElement.fileType;
 
     if (!uri) {
       return new Error('No uri specified.');
     }
-    if (!mimeType) {
-      return new Error('No mimeType specified.');
+    if (!fileType) {
+      return new Error('No fileType specified.');
     }
 
-    // TODO handle if sourceData.object
+    // TODO handle if renderableSourceDataElement.object
 
-    if (mimeType === 'application/xml+gpml') {
-      pathvisiojs.data.gpml.get(sourceData, function(gpml) {
+    if (fileType === 'gpml') {
+      pathvisiojs.data.gpml.get(renderableSourceDataElement, function(gpml) {
         pathvisiojs.data.gpml.toRenderableJson(gpml, uri, function(json) {
           callback(json);
         });
