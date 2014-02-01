@@ -40,7 +40,6 @@ pathvisiojs.view.pathwayDiagram.svg.node = function(){
   }
 
   function render(args, callback) {
-    console.log(args);
     if (!args) {
       throw new Error('Need input args to render a node.');
     }
@@ -52,23 +51,12 @@ pathvisiojs.view.pathwayDiagram.svg.node = function(){
       translatedX,
       translatedY;
 
-<<<<<<< HEAD
     if (!pathway) {
       throw new Error('Need a pathway to render a node.');
     }
     if (!nodeContainer) {
       throw new Error('Need a nodeContainer to render a node.');
     }
-=======
-      console.log(nodeContainer);
-
-    if (!pathway) {
-      throw new Error('Need a pathway to render a node.');
-    }
-    if (!nodeContainer) {
-      throw new Error('Need a nodeContainer to render a node.');
-    }
->>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
     if (!data) {
       throw new Error('Need input data to render a node.');
     }
@@ -79,11 +67,6 @@ pathvisiojs.view.pathwayDiagram.svg.node = function(){
       })[0];
       translatedX = data.x - parentDataElement.x;
       translatedY = data.y - parentDataElement.y;
-<<<<<<< HEAD
-=======
-      console.log('parentDataElement');
-      console.log(parentDataElement);
->>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
     }
     else {
       translatedX = data.x;
@@ -123,11 +106,6 @@ pathvisiojs.view.pathwayDiagram.svg.node = function(){
     .call(drag)
 
 
-<<<<<<< HEAD
-=======
-    console.log('nodeContainer');
-    console.log(nodeContainer);
->>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 
     /****************** 
      * background shape

@@ -55,11 +55,7 @@ var pathvisiojs = function(){
     };
 
     async.each(configArray, updateConfigsAsNeeded, function(err){
-<<<<<<< HEAD
       //console.log(pathvisiojs.config.bridgedbLinkOutsUriStub);
-=======
-      console.log(pathvisiojs.config.bridgedbLinkOutsUriStub);
->>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
       pathvisiojs.view.pathwayDiagram.load(args);
     });
   }

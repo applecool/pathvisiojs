@@ -586,7 +586,6 @@ pathvisiojs.data.gpml = function(){
                 pathway.Group = jsonGroups;
                 pathway.elements = pathway.elements.concat(pathway.Group);
 
-<<<<<<< HEAD
                 var relativeZIndexByRenderableType = {
                   'GroupNode': 0,
                   'Interaction': 1,
@@ -607,13 +606,6 @@ pathvisiojs.data.gpml = function(){
                 pathway.elements.sort(function(a, b) {
                   return a.zIndex - b.zIndex;
                 });
-=======
-                pathway.elements.sort(function(a, b) {
-                  return a.zIndex - b.zIndex;
-                });
-
-                console.log('pathwayNestedByGrouping');
->>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
                 callbackInside(null, pathway);
               },
               function(pathway, callbackInside){
@@ -624,12 +616,6 @@ pathvisiojs.data.gpml = function(){
                 pathway.pathwayNestedByGrouping = d3.nest()
                 .key(function(d) { return d.isContainedBy; })
                 .entries(pathway.elements);
-<<<<<<< HEAD
-=======
-
-                console.log('pathwayNestedByGrouping');
-                console.log(pathway.pathwayNestedByGrouping);
->>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
                 callbackInside(null, pathway);
               },
               function(pathway, callbackInside){

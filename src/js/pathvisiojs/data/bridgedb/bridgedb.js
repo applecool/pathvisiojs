@@ -103,6 +103,8 @@ pathvisiojs.data.bridgedb = function(){
 
   function getXrefAliases(singleSpecies, systemCode, xRefId, callback) {
     var bridgedbUri = pathvisiojs.config.bridgedbLinkOutsUriStub + encodeURIComponent(singleSpecies) + '/xrefs/' + encodeURIComponent(systemCode) + '/' + encodeURIComponent(xRefId);
+    //console.log(bridgedbUri);
+    d3.tsv(bridgedbUri)
     .response(function(request) { 
       return d3.tsv.parseRows(request.responseText, function(d) {
         return {xRefId: d[0], dataSourceName: d[1]}; 

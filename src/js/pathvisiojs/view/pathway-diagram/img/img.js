@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-=======
-"use strict";
-
->>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 // TODO remove controls that don't work with this element
 // This code is for the HTML img element. It displays the
 // diagram as a PNG, JPG, GIF, etc.
