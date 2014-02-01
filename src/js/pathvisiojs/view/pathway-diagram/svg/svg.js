@@ -1,5 +1,8 @@
 pathvisiojs.view.pathwayDiagram.svg = function(){
+<<<<<<< HEAD
   'use strict';
+=======
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 
   var svg, shapesAvailable, markersAvailable, contextLevelInput,
     renderableTypeToSvgElementMappings = {
@@ -25,7 +28,11 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
     viewport.attr("transform", translationMatrixString);
   }
 
+<<<<<<< HEAD
   function load(args, callbackOutside) {
+=======
+  function load(args, callback) {
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
     var diagramContainer = args.container, //a d3 selection corresponding to the containing element in the parent document
       containerWidth = args.containerWidth,
       containerHeight = args.containerHeight,
@@ -64,14 +71,21 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
               pathvisiojs.context = json['@context'];
 
               if (!json || json === 'fail') {
+<<<<<<< HEAD
                 callbackOutside(null);
+=======
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
                 throw new Error("Could not convert input source data to pathvisioJsJson.");
               }
 
               //console.log('json');
               //console.log(json);
               pathway = json;
+<<<<<<< HEAD
               callback(null, json);
+=======
+              callback(null);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
             })
           }
         },
@@ -195,7 +209,11 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
       }
     ],
     function(err, results) {
+<<<<<<< HEAD
       callbackOutside(svg);
+=======
+      callback(svg);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
     });
   }
 
@@ -284,22 +302,42 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
 
     var i = 0;
     async.each(data, function(item, callbackInside) {
+<<<<<<< HEAD
+=======
+      console.log('data');
+      console.log(data);
+      console.log('item');
+      console.log(item);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
       if (item.key !== 'undefined') {
         container = viewport.select('#' + strcase.paramCase(item.key));
       }
       else {
         container = viewport;
       }
+<<<<<<< HEAD
+=======
+      console.log(container[0][0]);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 
       container.selectAll('.element')
       .data(item.values)
       .enter()
       .append(function(d) {
+<<<<<<< HEAD
+=======
+        console.log('d');
+        console.log(d);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
         var childElementName = renderableTypeToSvgElementMappings[strcase.camelCase(d.renderableType)];
         var child = document.createElementNS('http://www.w3.org/2000/svg', childElementName);
         return child;
       })
       .attr("id", function (d) {
+<<<<<<< HEAD
+=======
+        console.log(strcase.paramCase(d['@id']));
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
         return strcase.paramCase(d['@id']);
       })
       .attr('class', 'element');
@@ -318,6 +356,10 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
   // other elements, this function will call itself back to render
   // the elements within the groupNode.
   function updateElementProperties(args, callback){
+<<<<<<< HEAD
+=======
+    console.log(args);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
     var svg = args.svg,
       data = args.data,
       pathway = args.pathway,
@@ -341,6 +383,11 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
     data.forEach(function(dataElement) {
       renderingArgs.data = dataElement;
       renderingArgs.element = d3.select('#' + strcase.paramCase(dataElement['@id']));
+<<<<<<< HEAD
+=======
+      console.log('#' + strcase.paramCase(dataElement['@id']));
+      console.log(renderingArgs.element);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
       if (dataElement.renderableType === 'GraphicalLine') {                                                                                        
         pathvisiojs.view.pathwayDiagram.svg.edge.graphicalLine.render(renderingArgs);                                                          
       } 
@@ -382,6 +429,11 @@ else if (dataElement.renderableType === 'Interaction') {
         .entries(pathway.elements);
         
         renderArgs.data = pathwayNestedByGrouping;
+<<<<<<< HEAD
+=======
+        console.log('pathwayNestedByGrouping');
+        console.log(pathwayNestedByGrouping);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 
         appendElementsInDomOrder(renderArgs, function() {
           callbackInside(null, svg);
@@ -399,6 +451,11 @@ else if (dataElement.renderableType === 'Interaction') {
         renderArgs.data = pathwayNestedByDependencies;
         //*/
 
+<<<<<<< HEAD
+=======
+        console.log('renderArgs.data');
+        console.log(renderArgs.data);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 
         updateElementProperties(renderArgs, function() {
           callback(svg);

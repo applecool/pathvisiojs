@@ -40,7 +40,11 @@ var pathvisiojs = function(){
   var svg, pathway, args;
 
   function load(args) {
+<<<<<<< HEAD
     //console.log(args);
+=======
+    console.log(args);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 
     // for now, load will just load a visual representation of a pathway, but
     // this could change in the future if we add capabilities for analytics or data conversion.
@@ -65,7 +69,11 @@ var pathvisiojs = function(){
     };
 
     async.each(configArray, updateConfigsAsNeeded, function(err){
+<<<<<<< HEAD
       //console.log(pathvisiojs.config.bridgedbLinkOutsUriStub);
+=======
+      console.log(pathvisiojs.config.bridgedbLinkOutsUriStub);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
       pathvisiojs.view.pathwayDiagram.load(args);
     });
   }
@@ -77,7 +85,10 @@ var pathvisiojs = function(){
 ;
 
 pathvisiojs.utilities = function(){
+<<<<<<< HEAD
   'use strict';
+=======
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 
   // from here: http://www.cjboco.com/blog.cfm/post/determining-an-elements-width-and-height-using-javascript/
   // TODO have not tested x-browser yet.
@@ -111,7 +122,11 @@ pathvisiojs.utilities = function(){
     var ret = {};
     var len = arguments.length;
     for (var i=0; i<len; i++) {
+<<<<<<< HEAD
       for (var p in arguments[i]) {
+=======
+      for (p in arguments[i]) {
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
         if (arguments[i].hasOwnProperty(p)) {
           ret[p] = arguments[i][p];
         }
@@ -371,7 +386,10 @@ pathvisiojs.config.pathwaySearchUriStub = '/index.php?title=Special:SearchPathwa
 ;
 
 pathvisiojs.data = function(){
+<<<<<<< HEAD
   'use strict';
+=======
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 
   // For now, pathvisio.js will attempt to convert any input data, as long as it is of type
   // GPML or has no type specified, into JSON.
@@ -381,6 +399,7 @@ pathvisiojs.data = function(){
     var uri = sourceData.uri;
     var object = sourceData.object;
     var fileType = sourceData.fileType;
+<<<<<<< HEAD
 
     if (!uri) {
       return new Error('No uri specified.');
@@ -424,6 +443,50 @@ pathvisiojs.data = function(){
 pathvisiojs.data.bridgedb = function(){
   'use strict';
 
+=======
+
+    if (!uri) {
+      return new Error('No uri specified.');
+    }
+    if (!fileType) {
+      return new Error('No fileType specified.');
+    }
+
+    // TODO handle if sourceData.object
+
+    if (fileType === 'gpml') {
+      pathvisiojs.data.gpml.get(sourceData, function(gpml) {
+        pathvisiojs.data.gpml.toRenderableJson(gpml, uri, function(json) {
+          callback(json);
+        });
+      });
+    }
+    else {
+      throw new Error('Cannot get jGpml from the specified input.');
+    }
+
+    // This is just an experiment with using mongodb for caching json,
+    // but the higher priority for now would be to cache the SVG.
+    // Caching the json would be part of having the API deliver results
+    // in JSON format.
+    /*
+    d3.json(parsedInputData.cached, function(json) {
+      callback(json);
+    });
+    //*/
+  }
+
+  return{
+    get:get
+  };
+}();
+
+
+;
+
+pathvisiojs.data.bridgedb = function(){
+
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
   function getXrefAnnotationDataByDataNode(singleSpecies, id, datasource, label, desc, callback) {
     //For unannotated nodes, without datasource or identifier
     if (null == id || null == datasource){
@@ -526,7 +589,11 @@ pathvisiojs.data.bridgedb = function(){
 
   function getXrefAliases(singleSpecies, systemCode, xRefId, callback) {
     var bridgedbUri = pathvisiojs.config.bridgedbLinkOutsUriStub + encodeURIComponent(singleSpecies) + '/xrefs/' + encodeURIComponent(systemCode) + '/' + encodeURIComponent(xRefId);
+<<<<<<< HEAD
     //console.log(bridgedbUri);
+=======
+    console.log(bridgedbUri);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
     d3.tsv(bridgedbUri)
     .response(function(request) { 
       return d3.tsv.parseRows(request.responseText, function(d) {
@@ -578,7 +645,10 @@ pathvisiojs.data.biopax = function(){
 ;
 
 pathvisiojs.data.pathvisiojsJson = function(){
+<<<<<<< HEAD
   'use strict';
+=======
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 
   // For now, pathvisio.js will attempt to convert any input data, as long as it is of type
   // GPML or has no type specified, into JSON.
@@ -628,6 +698,10 @@ pathvisiojs.data.pathvisiojsJson = function(){
 
 ;
 
+<<<<<<< HEAD
+=======
+"use strict";
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 pathvisiojs.data.gpml = function(){
   'use strict';
 
@@ -1216,6 +1290,7 @@ pathvisiojs.data.gpml = function(){
                 pathway.Group = jsonGroups;
                 pathway.elements = pathway.elements.concat(pathway.Group);
 
+<<<<<<< HEAD
                 var relativeZIndexByRenderableType = {
                   'GroupNode': 0,
                   'Interaction': 1,
@@ -1236,6 +1311,13 @@ pathvisiojs.data.gpml = function(){
                 pathway.elements.sort(function(a, b) {
                   return a.zIndex - b.zIndex;
                 });
+=======
+                pathway.elements.sort(function(a, b) {
+                  return a.zIndex - b.zIndex;
+                });
+
+                console.log('pathwayNestedByGrouping');
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
                 callbackInside(null, pathway);
               },
               function(pathway, callbackInside){
@@ -1246,6 +1328,12 @@ pathvisiojs.data.gpml = function(){
                 pathway.pathwayNestedByGrouping = d3.nest()
                 .key(function(d) { return d.isContainedBy; })
                 .entries(pathway.elements);
+<<<<<<< HEAD
+=======
+
+                console.log('pathwayNestedByGrouping');
+                console.log(pathway.pathwayNestedByGrouping);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
                 callbackInside(null, pathway);
               },
               function(pathway, callbackInside){
@@ -1981,9 +2069,12 @@ pathvisiojs.data.gpml.element.node.groupNode = function() {
       dimensions.width = (dimensions.bottomRightCorner.x - dimensions.topLeftCorner.x) + 2 * (group.padding + group.borderWidth);
       dimensions.height = (dimensions.bottomRightCorner.y - dimensions.topLeftCorner.y) + 2 * (group.padding + group.borderWidth);
       dimensions.zIndex = Math.min(dimensions.zIndex, groupContent.zIndex);
+<<<<<<< HEAD
       callbackInside(null);
     },
     function (err) {
+=======
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
       callback(dimensions);
     });
   }
@@ -3365,7 +3456,11 @@ pathvisiojs.view.annotation.xRef = function(){
       };
       pathvisiojs.view.annotation.render(data);
 
+<<<<<<< HEAD
       //console.log(pathvisiojs.config.bridgedbLinkOutsUriStub);
+=======
+      console.log(pathvisiojs.config.bridgedbLinkOutsUriStub);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
       //then retrieve the bridgedb data
       var xRefData = pathvisiojs.data.bridgedb.getXrefAnnotationDataByDataNode(organism, id, datasource, label, desc, function(annotationData) {
         setCachedAnnotationData(organism, label, id, datasource, annotationData);
@@ -3388,6 +3483,7 @@ pathvisiojs.view.annotation.xRef = function(){
 }();
 ;
 
+<<<<<<< HEAD
 pathvisiojs.view.pathwayDiagram = function(){
   'use strict';
 
@@ -3463,14 +3559,95 @@ pathvisiojs.view.pathwayDiagram = function(){
   function getSupportedViewMethods() {
     //making an assumption that all browsers we care about support the HTML img tag
 
+=======
+"use strict";
+
+pathvisiojs.view.pathwayDiagram = function(){
+  // currently just using Gecko (Firefox) list of supported image formats for the HTML img tag:
+  // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Img
+  // TODO decide what to do if the user specifies an SVG image as a dataSource element
+
+  // the viewMethods are sorted in order of preference - viewMethod with lower index will be used if more than one is returned.
+  var sourceDataFileTypeToViewMethodMappings = {
+    gpml:[
+      'svg' //in the future, could add canvas support
+    ],
+    biopax:[ //biopax is not currently supported
+      'svg' //in the future, could add canvas support
+    ],
+    pdf:[
+      'pdf' //not supported now. this would be future. we might use pdf.js or we could just try using an embed or object tag.
+    ],
+    png:[
+      'img'
+    ],
+    jpg:[
+      'img'
+    ],
+    jpeg:[
+      'img'
+    ],
+    jpe:[
+      'img'
+    ],
+    jif:[
+      'img'
+    ],
+    jfif:[
+      'img'
+    ],
+    jfi:[
+      'img'
+    ],
+    gif:[
+      'img'
+    ],
+    ico:[
+      'img'
+    ],
+    bmp:[
+      'img'
+    ],
+    dib:[
+      'img'
+    ]
+  };
+
+  function getFirstRenderableSourceDataElement(sourceData) {
+    var sourceDataElement, viewMethodsForSourceDataFileType, supportedViewMethodsForSourceDataFileType,
+      results = {},
+      supportedViewMethods = getSupportedViewMethods();
+
+    var i = 0;
+    do {
+      sourceDataElement = sourceData[i];
+      viewMethodsForSourceDataFileType = sourceDataFileTypeToViewMethodMappings[sourceDataElement.fileType];
+      supportedViewMethodsForSourceDataFileType = pathvisiojs.utilities.intersect(viewMethodsForSourceDataFileType, supportedViewMethods);
+      i += 1;
+    } while ((supportedViewMethodsForSourceDataFileType.length < 1) && (i < sourceData.length + 1));
+
+    sourceDataElement.selectedViewMethod = supportedViewMethodsForSourceDataFileType[0];
+    return sourceDataElement;
+  }
+
+  //function getImageFormatByDataSourceFileType(fileType) {
+  //this is testing the browser the user is currently using 
+  function getSupportedViewMethods() {
+    //making an assumption that all browsers we care about support the HTML img tag
+
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
     var supportedViewMethods = ['img'];
 
     // TODO support svg that is not inline in the svg viewMethod
     // The IE9 detection is a temporary hack. It is used because IE9 cannot currently convert GPML to pathvisiojsJson,
     // so it cannot display the resulting SVG.
     // TODO get gpml to pathvisiojsJson conversion working with IE9
+<<<<<<< HEAD
     if (Modernizr.inlinesvg && (!pathvisiojs.utilities.isIE())) {
     //if (Modernizr.inlinesvg && (pathvisiojs.utilities.isIE() !== 9)) {
+=======
+    if (Modernizr.inlinesvg && (pathvisiojs.utilities.isIE() !== 9)) {
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
       supportedViewMethods.push('svg');
     }
     
@@ -3571,6 +3748,7 @@ pathvisiojs.view.pathwayDiagram = function(){
           //loadDiagramArgs.customSymbols = customSymbols;
           //*
           pathvisiojs.view.pathwayDiagram.svg.load(loadDiagramArgs, function(diagram) {
+<<<<<<< HEAD
             if (!!diagram) {
               callback(null, diagram);
             }
@@ -3581,6 +3759,9 @@ pathvisiojs.view.pathwayDiagram = function(){
                 callback(null, diagram);
               });
             }
+=======
+            callback(null, diagram);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
           });
           //*/
         }
@@ -3600,7 +3781,11 @@ pathvisiojs.view.pathwayDiagram = function(){
         // TODO refactor tests so they don't need this hack.
         d3.select('body').append('span')
         .attr('id', 'pathvisiojs-is-loaded');
+<<<<<<< HEAD
         //console.log('Pathvisiojs done loading.');
+=======
+        console.log('Pathvisiojs done loading.');
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
         callback(null);
       }
     ]);
@@ -3610,6 +3795,12 @@ pathvisiojs.view.pathwayDiagram = function(){
     load:load
   };
 }();
+<<<<<<< HEAD
+=======
+
+     
+;
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 
      
 ;
@@ -3625,6 +3816,17 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
       graphicalLine: 'path'
     };
 
+<<<<<<< HEAD
+=======
+  var svg, shapesAvailable, markersAvailable, contextLevelInput,
+    renderableTypeToSvgElementMappings = {
+      entityNode: 'g',
+      groupNode: 'g',
+      interaction: 'path',
+      graphicalLine: 'path'
+    };
+
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
   //calculates the proper scaling and translations to fit content (i.e., diagram) to screen (i.e., viewport)
   function fitAndCenterDiagramWithinViewport(viewport, viewportWidth, viewportHeight, diagramWidth, diagramHeight) {
     // viewport is a d3 selection
@@ -3641,7 +3843,11 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
     viewport.attr("transform", translationMatrixString);
   }
 
+<<<<<<< HEAD
   function load(args, callbackOutside) {
+=======
+  function load(args, callback) {
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
     var diagramContainer = args.container, //a d3 selection corresponding to the containing element in the parent document
       containerWidth = args.containerWidth,
       containerHeight = args.containerHeight,
@@ -3656,6 +3862,7 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
 
 
     async.waterfall([
+<<<<<<< HEAD
       function(callback){
         async.parallel({
           preloadSvg: function(callback) {
@@ -3702,6 +3909,53 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
           callback(null);
         })
       },
+=======
+      function(callback){
+        async.parallel({
+          preloadSvg: function(callback) {
+            var preloadDiagramArgs = {};
+              preloadDiagramArgs.container = diagramContainer;
+              preloadDiagramArgs.customMarkers = customMarkers,
+              //preloadDiagramArgs.customSymbols = customSymbols,
+              preloadDiagramArgs.cssUri = cssUri;
+
+            pathvisiojs.view.pathwayDiagram.svg.loadPartials(preloadDiagramArgs, function(svgTemplate) {
+              svg = svgTemplate;
+
+              if (!svg) {
+                throw new Error("Could not load SVG template.");
+              }
+
+              callback(null);
+            });
+          },
+          pathway: function(callback){
+            pathvisiojs.data.pathvisiojsJson.get(renderableSourceDataElement, function(json) {
+              pathvisiojs.context = json['@context'];
+
+              if (!json || json === 'fail') {
+                throw new Error("Could not convert input source data to pathvisioJsJson.");
+              }
+
+              //console.log('json');
+              //console.log(json);
+              pathway = json;
+              callback(null);
+            })
+          }
+        },
+        function(err, results){
+          //TODO get pathwayWidth and Height
+
+          callback(null);
+        })
+      },
+      function(callback){
+        pathvisiojs.view.pathwayDiagram.svg.renderWithCachedData(svg, pathway, function() {
+          callback(null);
+        })
+      },
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
       function(callback) {
         var viewport = svg.select('#viewport');
 
@@ -3811,7 +4065,11 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
       }
     ],
     function(err, results) {
+<<<<<<< HEAD
       callbackOutside(svg);
+=======
+      callback(svg);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
     });
   }
 
@@ -3878,6 +4136,8 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
   // other elements, this function will call itself back to render
   // the elements within the groupNode.
   function appendElementsInDomOrder(args, callback){
+<<<<<<< HEAD
+=======
     var svg = args.svg,
       data = args.data,
       pathway = args.pathway,
@@ -3898,6 +4158,73 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
     } 
     data = pathvisiojs.utilities.convertToArray(data);
 
+    var i = 0;
+    async.each(data, function(item, callbackInside) {
+      console.log('data');
+      console.log(data);
+      console.log('item');
+      console.log(item);
+      if (item.key !== 'undefined') {
+        container = viewport.select('#' + strcase.paramCase(item.key));
+      }
+      else {
+        container = viewport;
+      }
+      console.log(container[0][0]);
+
+      container.selectAll('.element')
+      .data(item.values)
+      .enter()
+      .append(function(d) {
+        console.log('d');
+        console.log(d);
+        var childElementName = renderableTypeToSvgElementMappings[strcase.camelCase(d.renderableType)];
+        var child = document.createElementNS('http://www.w3.org/2000/svg', childElementName);
+        return child;
+      })
+      .attr("id", function (d) {
+        console.log(strcase.paramCase(d['@id']));
+        return strcase.paramCase(d['@id']);
+      })
+      .attr('class', 'element');
+      i += 1;
+
+      callbackInside(null);
+    },
+    function(err){
+      callback(null, 'Successfully rendered elements');
+    });
+  }
+
+  // this function does not render all elements. Rather, it renders
+  // one or more selected elements that are given as inputs.
+  // If one or more of these elements are a groupNode that contains
+  // other elements, this function will call itself back to render
+  // the elements within the groupNode.
+  function updateElementProperties(args, callback){
+    console.log(args);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
+    var svg = args.svg,
+      data = args.data,
+      pathway = args.pathway,
+      viewport = args.container,
+      container;
+
+    if (!viewport) {
+      throw new Error("No viewport specified.");
+    }
+    if (!data) {
+      throw new Error("No data entered to render.");
+    }
+    if (!svg) {
+      throw new Error("No svg specified.");
+    }
+    if (!pathway) {
+      throw new Error("No pathway specified.");
+    } 
+    data = pathvisiojs.utilities.convertToArray(data);
+
+<<<<<<< HEAD
     var i = 0;
     async.each(data, function(item, callbackInside) {
       if (item.key !== 'undefined') {
@@ -3953,10 +4280,17 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
     } 
     data = pathvisiojs.utilities.convertToArray(data);
 
+=======
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
     var renderingArgs = args;
     data.forEach(function(dataElement) {
       renderingArgs.data = dataElement;
       renderingArgs.element = d3.select('#' + strcase.paramCase(dataElement['@id']));
+<<<<<<< HEAD
+=======
+      console.log('#' + strcase.paramCase(dataElement['@id']));
+      console.log(renderingArgs.element);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
       if (dataElement.renderableType === 'GraphicalLine') {                                                                                        
         pathvisiojs.view.pathwayDiagram.svg.edge.graphicalLine.render(renderingArgs);                                                          
       } 
@@ -3998,6 +4332,11 @@ else if (dataElement.renderableType === 'Interaction') {
         .entries(pathway.elements);
         
         renderArgs.data = pathwayNestedByGrouping;
+<<<<<<< HEAD
+=======
+        console.log('pathwayNestedByGrouping');
+        console.log(pathwayNestedByGrouping);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 
         appendElementsInDomOrder(renderArgs, function() {
           callbackInside(null, svg);
@@ -4007,6 +4346,7 @@ else if (dataElement.renderableType === 'Interaction') {
         //TODO for the non-cached version, this should sort the elements by dependency, so that group contents are updated before their containing group,
         //and an edge is updated before any edges that rely on it.
         renderArgs.data = pathway.elements;
+<<<<<<< HEAD
 
         /*
         var pathwayNestedByDependencies = d3.nest()
@@ -4016,6 +4356,19 @@ else if (dataElement.renderableType === 'Interaction') {
         //*/
 
 
+=======
+
+        /*
+        var pathwayNestedByDependencies = d3.nest()
+        .key(function(d) { return d.hasDependencies; })
+        .entries(pathway.elements);
+        renderArgs.data = pathwayNestedByDependencies;
+        //*/
+
+        console.log('renderArgs.data');
+        console.log(renderArgs.data);
+
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
         updateElementProperties(renderArgs, function() {
           callback(svg);
         });
@@ -4129,6 +4482,10 @@ else if (dataElement.renderableType === 'Interaction') {
 }();
 ;
 
+<<<<<<< HEAD
+=======
+"use strict";
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 pathvisiojs.view.pathwayDiagram.svg.infoBox = function(){
   'use strict';
     
@@ -4472,6 +4829,7 @@ pathvisiojs.view.pathwayDiagram.svg.node = function(){
   }
 
   function render(args, callback) {
+    console.log(args);
     if (!args) {
       throw new Error('Need input args to render a node.');
     }
@@ -4483,6 +4841,11 @@ pathvisiojs.view.pathwayDiagram.svg.node = function(){
       translatedX,
       translatedY;
 
+<<<<<<< HEAD
+=======
+      console.log(nodeContainer);
+
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
     if (!pathway) {
       throw new Error('Need a pathway to render a node.');
     }
@@ -4499,6 +4862,11 @@ pathvisiojs.view.pathwayDiagram.svg.node = function(){
       })[0];
       translatedX = data.x - parentDataElement.x;
       translatedY = data.y - parentDataElement.y;
+<<<<<<< HEAD
+=======
+      console.log('parentDataElement');
+      console.log(parentDataElement);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
     }
     else {
       translatedX = data.x;
@@ -4538,6 +4906,11 @@ pathvisiojs.view.pathwayDiagram.svg.node = function(){
     .call(drag)
 
 
+<<<<<<< HEAD
+=======
+    console.log('nodeContainer');
+    console.log(nodeContainer);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 
     /****************** 
      * background shape
@@ -4769,7 +5142,10 @@ pathvisiojs.view.pathwayDiagram.svg.node.anchor = function(){
 ;
 
 pathvisiojs.view.pathwayDiagram.svg.node.EntityNode = function(){
+<<<<<<< HEAD
   'use strict';
+=======
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
   function render(args) {
     if (!args.data) {
       throw new Error('EntityNode data missing.');
@@ -5524,6 +5900,8 @@ pathvisiojs.view.pathwayDiagram.svg.node.groupNode = function(){
       })
 
       var groupContents = args.data.contains;
+      console.log('args.data.contains');
+      console.log(args.data.contains);
       callback(groupContainer, groupContents);
     });
   }
@@ -5769,6 +6147,11 @@ pathvisiojs.view.pathwayDiagram.svg.edge = function(){
         point.x = point.x - parentDataElement.x;
         point.y = point.y - parentDataElement.y;
       });
+<<<<<<< HEAD
+=======
+      console.log('parentDataElement');
+      console.log(parentDataElement);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
     }
 
     /*
@@ -6693,6 +7076,10 @@ pathvisiojs.view.pathwayDiagram.svg.edge.marker = function(){
 
     var defaultMarker, refX, refY, viewBox, viewBoxElements;
     if (position === 'end') {
+<<<<<<< HEAD
+=======
+      console.log('end');
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
       defaultMarker = d3.select('#' + markerIdStub + '-'+position+'-default');
       refX = parseFloat(defaultMarker.attr('refX'));
       refY = parseFloat(defaultMarker.attr('refY'));
@@ -6855,6 +7242,7 @@ pathvisiojs.view.pathwayDiagram.svg.edge.point = function(){
 ;
 
 pathvisiojs.view.pathwayDiagram.svg.edge.path = function(){	
+<<<<<<< HEAD
   'use strict';
 
   function getPath(edge) {
@@ -6887,9 +7275,74 @@ pathvisiojs.view.pathwayDiagram.svg.edge.path = function(){
     else {
       console.log("Unknown connector type: " + type);
       return null;
+=======
+    function getPath(edge) {
+	var path;
+	var type = edge.ConnectorType;
+	
+	if (type == 'Straight'){
+          if (edge.Point.length == 2) {
+            return svgLine(edge.Point);
+          }
+          else {
+            console.log("Too many points for a straight line!");
+            return null;
+          }
+	}
+
+	else if (type == 'Segmented') {
+	    return svgLine(edge.Point);
+	}
+
+	else if (type == 'Elbow'){
+	    return svgLine(calcPathpoints(edge.Point));
+	}
+
+	else if (type == 'Curved'){
+	    return svgCurve(calcPathpoints(edge.Point));
+	}
+	
+	else {
+	    console.log("Unknown connector type: " + type);
+	    return null;
+	}
+    }
+
+    function calcPathpoints(p){
+	//check to see if all waypoints are provided
+	if (p.length == 2) {
+	  p = calcAllWaypoints(p);
+	}
+
+	var ppts = [];
+
+	//first path point is start
+	ppts[0] = p[0];
+
+	//intermediate path points
+	var axis = getAxis(p[0]); //TODO: account for starting on an anchor..
+	var i;
+	for (i=1; i<p.length; i++){ 
+	  var dy = p[i].y - p[i-1].y;
+	  var dx = p[i].x - p[i-1].x;
+	  
+	  if (axis == 1){ //Vertical
+	  	ppts[i] = {x:p[i-1].x,y:p[i-1].y+dy};
+	  } else { //Horizontal
+		ppts[i] = {x:p[i-1].x+dx,y:p[i-1].y};
+	  }
+	  axis = (axis+1)%2;  //toggle 1|0
+	}
+
+	// final path point is end
+	ppts[p.length] = p[p.length-1];
+
+        return ppts; 
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
     }
   }
 
+<<<<<<< HEAD
   function calcPathpoints(p){
     //check to see if all waypoints are provided
     if (p.length == 2) {
@@ -7077,13 +7530,175 @@ pathvisiojs.view.pathwayDiagram.svg.edge.path = function(){
   };
 }();
 ;
+=======
+    function calcAllWaypoints(p) {
+        var wptCount = getNumWaypoints(p);
+	var offset = 20;
+	var start = p[0];
+	var end = p[1];
+
+	var wpts = [];
+	
+	// first waypoint is start
+	wpts[0] = start;
+
+	// calc new waypoints	
+	if (wptCount == 0) {
+		//done!
+	}
+	else if (wptCount == 1) {
+		wpts[1] = calcWaypoint(start, end, getAxis(start), getDir(end));
+	} else if (wptCount == 2){
+		wpts[1] = calcWaypoint(start, {x:(end.x + offset * getDir(end)), y:(end.y + offset * getDir(end))}, getAxis(start), getDir(start));
+		wpts[2] = calcWaypoint(end, wpts[1], getAxis(end), getDir(end));
+	} else if (wptCount == 3){
+		wpts[2] = {x:(start.x + (end.x - start.x)/2), y:(start.y + (end.y - start.y)/2)};
+		wpts[1] = calcWaypoint(start, wpts[2], getAxis(start), getDir(start));
+	 	wpts[3] = calcWaypoint(end, wpts[2], getAxis(end), getDir(end));
+	} else {
+		console.log("Too many waypoint estimated!!!");
+	}
+
+	// final waypoint is end
+	wpts[wptCount+1] = end;
+
+//console.log(wptCount);
+//console.log(wpts);
+
+	return wpts;
+    }
+
+    function calcWaypoint(start, end, axis, dir){
+	var offset = 20;
+	var x = 0;
+	var y = 0;
+	if (axis == 1){ //Vertical
+	  x = start.x + (end.x - start.x)/2;
+	  y = start.y + offset * dir;
+	} else {  //Horizontal
+	  x = start.x + offset * dir;
+	  y = start.y + (end.y - start.y)/2;
+	}
+	return {x:x, y:y};
+    }
+
+    function getNumWaypoints(pts){
+        var start = pts[0];
+	var end = pts[1];
+	
+	var leftToRight = sign(end.x - start.x) > 0; 
+	var left = leftToRight ? start : end;
+	var right = leftToRight ? end : start;
+
+	var leftIsBottom = sign(left.y - right.y) < 0; 
+	var z = leftIsBottom ? 1 : 0;
+	var x = leftToRight ? getSide(start) : getSide(end);
+	var y = leftToRight ? getSide(end) : getSide(start);
+
+	var wptMatrix = [
+				[
+						[ 1, 1 ],
+						[ 2, 2 ],
+						[ 1, 3 ],
+						[ 0, 2 ]
+				],
+				[
+						[ 2, 0 ],
+						[ 1, 1 ],
+						[ 0, 2 ],
+						[ 1, 1 ],
+				],
+				[
+						[ 3, 1 ],
+						[ 2, 2 ],
+						[ 1, 1 ],
+						[ 2, 0 ],
+				],
+				[
+						[ 2, 2 ],
+						[ 3, 3 ],
+						[ 2, 2 ],
+						[ 1, 1 ],
+				]
+	]
+
+	return wptMatrix[x][y][z];
+    }
+
+    function sign(x) { 
+	return x ? x < 0 ? -1 : 1 : 0; //caution: sign("0") -> 1 
+    };
+
+    function getSide(p){
+	if(Math.abs(p.RelX) > Math.abs(p.RelY)) {
+	  if(p.RelX > 0) {
+            return 1; //East
+	  } else {
+            return 3; //West
+	  }
+ 	} else {
+	  if(p.RelY > 0) {
+            return 2; //South
+	  } else {
+            return 0; //North
+	  }
+	}
+      }
+
+    function getAxis(p) {
+        if (Math.abs(p.RelX) > Math.abs(p.RelY)){
+           return 0; // Y-Axis; Vertical
+        } else {
+          return 1; // X-Axis; Horzontal
+        }
+    }
+
+    function getDir(p){ 
+        if(Math.abs(p.RelX) > Math.abs(p.RelY)) {
+          if(p.RelX > 0) {
+            return 1; //Right
+          } else {
+            return -1; //Left
+          }
+        } else {
+          if(p.RelY > 0) {
+            return 1; //Down
+          } else {
+            return -1; //Up
+          }
+        }
+    }
+
+    //for generating line segments through a path of points (pathpoints, not waypoints)
+    var svgLine = d3.svg.line()
+	.x(function(d) {return d.x; })
+	.y(function(d) {return d.y;})
+	.interpolate("linear");
+
+    //for generating bezier curves through a path of points (pathpoints, not waypoints)
+    var svgCurve = d3.svg.line()
+        .x(function(d) {return d.x; })
+        .y(function(d) {return d.y;})
+        .interpolate("basis");
+
+  return {
+    getPath:getPath
+  };
+}();
+;
+
+"use strict";
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 
 // TODO remove controls that don't work with this element
 // This code is for the HTML img element. It displays the
 // diagram as a PNG, JPG, GIF, etc.
 
 pathvisiojs.view.pathwayDiagram.img = function(){
+<<<<<<< HEAD
   'use strict';
+=======
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 
   function load(args, callback) {
     if (!args) {

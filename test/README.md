@@ -51,7 +51,11 @@ D. Open a new terminal tab or window and run the tests:
 
 ```
 $ cd ~/Sites/pathvisiojs/
+<<<<<<< HEAD
 $ grunt test:protocol
+=======
+$ ./node_modules/protractor/bin/protractor ./test/test-selected-pathways-settings.js
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 ```
 
 Once the tests finish running, you will see the test results in the terminal window. Everything should be successful and displayed in green.

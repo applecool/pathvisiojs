@@ -181,6 +181,7 @@ pathvisiojs.view.pathwayDiagram = function(){
           //loadDiagramArgs.customSymbols = customSymbols;
           //*
           pathvisiojs.view.pathwayDiagram.svg.load(loadDiagramArgs, function(diagram) {
+<<<<<<< HEAD
             if (!!diagram) {
               callback(null, diagram);
             }
@@ -191,6 +192,9 @@ pathvisiojs.view.pathwayDiagram = function(){
                 callback(null, diagram);
               });
             }
+=======
+            callback(null, diagram);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
           });
           //*/
         }
@@ -210,7 +214,11 @@ pathvisiojs.view.pathwayDiagram = function(){
         // TODO refactor tests so they don't need this hack.
         d3.select('body').append('span')
         .attr('id', 'pathvisiojs-is-loaded');
+<<<<<<< HEAD
         //console.log('Pathvisiojs done loading.');
+=======
+        console.log('Pathvisiojs done loading.');
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
         callback(null);
       }
     ]);

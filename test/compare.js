@@ -2,6 +2,7 @@ var module = {};
 var srcDirectoryUri;
 var pvjsSources;
 var pathvisioNS = pathvisioNS || {};
+<<<<<<< HEAD
 
 function serializeXmlToString(xmlDoc) {
   var oSerializer;
@@ -15,6 +16,11 @@ function serializeXmlToString(xmlDoc) {
 }
 
 var developmentLoader = function() {
+=======
+
+var developmentLoader = function() {
+  var oSerializer = new XMLSerializer();
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 
   /* *******************
   /* Get the desired GPML file URL or WikiPathways ID from the URL parameters.
@@ -266,13 +272,22 @@ var developmentLoader = function() {
     var viewport = svg.append('g').
     attr('id', 'viewport');
 
+<<<<<<< HEAD
     pathvisioNS['tmp/pathvisiojs.svg'] = serializeXmlToString(svg[0][0]);
+=======
+    var oSerializer = new XMLSerializer();
+    pathvisioNS['tmp/pathvisiojs.svg'] = oSerializer.serializeToString(svg[0][0]);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
     callback();
   }
 
   function generateHtmlTemplate(callback) {
     d3.html(srcDirectoryUri + 'pathvisiojs.html', function(html) {
+<<<<<<< HEAD
       pathvisioNS['tmp/pathvisiojs.html'] = serializeXmlToString(html);
+=======
+      pathvisioNS['tmp/pathvisiojs.html'] = oSerializer.serializeToString(html);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
       callback();
     });
   }
@@ -379,7 +394,10 @@ var developmentLoader = function() {
   };
 }();
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
 /* *******************
 /* Until we finish automating the Grunt build process, we are manually getting the html template with this function.
 /* *******************/
@@ -393,7 +411,12 @@ var getPathvisiojsHtmlTemplate = function() {
   html.select('svg').remove();
   var html00 = html[0][0];
 
+<<<<<<< HEAD
   var serializedHtml = serializeXmlToString(html00);
+=======
+  var oSerializer = new XMLSerializer();
+  var serializedHtml = oSerializer.serializeToString(html00);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
   console.log(serializedHtml);
 }
 
@@ -419,6 +442,11 @@ var getPathvisiojsSvgTemplate = function() {
   });
   var svg00 = svg[0][0];
   //thanks MDN
+<<<<<<< HEAD
   var serializedSvg = serializeXmlToString(svg00);
+=======
+  var oSerializer = new XMLSerializer();
+  var serializedSvg = oSerializer.serializeToString(svg00);
+>>>>>>> b12890853ea897c30404eb50ad7716a01b68170e
   console.log(serializedSvg);
 }
