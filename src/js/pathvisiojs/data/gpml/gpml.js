@@ -217,7 +217,15 @@ pathvisiojs.data.gpml = function(){
           '@context': function(callback){
             pathway['@context'] = {
               '@vocab':'http://vocabularies.wikipathways.org/gpml#',
+              '@base': pathwayIri,
               'gpml':'http://vocabularies.wikipathways.org/gpml#',
+              'id':'@id',
+              /*
+              'id': {
+                '@id': 'http://purl.org/dc/terms/identifier',
+                '@type': '@id'
+              },
+              //*/
               'xsd': 'http://www.w3.org/2001/XMLSchema#',
               'wp':'http://vocabularies.wikipathways.org/wp#',
               'biopax': 'http://www.biopax.org/release/biopax-level3.owl#',
