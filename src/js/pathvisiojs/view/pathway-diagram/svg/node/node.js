@@ -185,29 +185,87 @@ pathvisiojs.view.pathwayDiagram.svg.node = function(){
     return port;
   }
 
+  function highlight(args) {
+    var getSelector = {
+      selector: function(input) {
+        return input;
+      },
+      label: function(input) {
+        var selector = '.' + pathvisiojs.view.pathwayDiagram.svg.convertToCssClassName('label-' + decodeURIComponent(input));
+        return selector;
+      },
+      xref: function(input) {
+        var selector = '.' + pathvisiojs.view.pathwayDiagram.svg.convertToCssClassName('xref-' + decodeURIComponent(input));
+        return selector;
+      }
+    };
 
-  function highlightByLabel(svg, pathway, nodeLabel) {
-    var svg = d3.selectAll('#pathvisiojs-diagram');
-    svg.selectAll('.highlighted-node').remove();
-    var allDataNodesWithText = pathway.DataNode.filter(function(d, i) {return (!!d.text);});
-    var selectedNodes = allDataNodesWithText.filter(function(d, i) {return d.text.line.indexOf(nodeLabel) !== -1;});
-    selectedNodes.forEach(function(node) {
-      var nodeContainer = svg.select('#pathway-iri-' + node.GraphId); //strcase.paramCase(node['id']));
-      var height = nodeContainer[0][0].getBBox().height;
-      var width = nodeContainer[0][0].getBBox().width; 
-      nodeContainer.append('rect') 
-      .attr('class', 'highlighted-node')
+    var argsEntries = d3.map(args).entries();
+    var methodsInGetSelector = d3.map(getSelector).entries();
+    var i = 0;
+    var selector, method;
+    do {
+      method = methodsInGetSelector.filter(function(methodsInGetSelector){return methodsInGetSelector.key === argsEntries[i].key;});
+      if (method.length > 0) {
+        selector = method[0].value(argsEntries[i].value);
+      }
+      i += 1;
+    } while ((!selector) && i < argsEntries.length);
+
+    var cssClass = args.cssClass || 'highlighted-node',
+    style = args.style,
+    svgId = args.svgId || 'pathvisiojs-diagram';
+
+    var svg = d3.select('#' + svgId);
+    var styles, styleString = '';
+    if (!!style) {
+      styles = d3.map(style).entries();
+      styles.forEach(function(styleAttribute) {
+        styleString += strcase.paramCase(styleAttribute.key) + ':' + styleAttribute.value + '; ';
+      });
+    }
+    var selectedNodes = svg.selectAll(selector);
+    selectedNodes.each(function() {
+      var node = d3.select(this);
+      var height = node[0][0].getBBox().height;
+      var width = node[0][0].getBBox().width; 
+      //TODO get the border width and set the offset based on border width
+      var highlighter = node.append('rect') 
       .attr('x', -2.5)
       .attr('y', -2.5)
+      .attr('class', cssClass)
+      .attr('style', styleString)
       .attr('width', width + 5)
       .attr('height', height + 5);
     });
   }  
 
+  function highlightByLabel(svg, pathway, nodeLabel) {
+    var svgId = svg.attr('id') || 'pathvisiojs-diagram';
+    svg.selectAll('.highlighted-from-typeahead').remove();
+    var args = {};
+    args.svgId = svgId;
+    args.label = nodeLabel;
+    args.cssClass = 'highlighted-node highlighted-from-typeahead';
+    highlight(args);
+    d3.select('#clear-highlights-from-typeahead')[0][0].style.visibility = 'visible';
+  }
+
+  function clearHighlightsFromTypeahead(svgId) {
+    svgId = svgId || 'pathvisiojs-diagram';
+    var svg = d3.select('#' + svgId);
+    svg.selectAll('.highlighted-from-typeahead').remove();
+    // TODO this won't work well if we have more than one diagram on the page
+    d3.select('#highlight-by-label-input')[0][0].value = '';
+    d3.select('#clear-highlights-from-typeahead')[0][0].style.visibility = 'hidden';
+  }
+
   return {
     //renderAll:renderAll,
     render:render,
     getPortCoordinates:getPortCoordinates,
-    highlightByLabel:highlightByLabel
+    highlight:highlight,
+    highlightByLabel:highlightByLabel,
+    clearHighlightsFromTypeahead:clearHighlightsFromTypeahead
   };
 }();

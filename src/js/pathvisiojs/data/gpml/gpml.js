@@ -8,6 +8,13 @@ pathvisiojs.data.gpml = function(){
     }
   }
 
+  var defaults = {
+    'FontSize':{
+      'Type':"FontSize",
+      'Value':10
+    }
+  }
+
   function get(sourceData, callback) {
     var uri = sourceData.uri;
     var object = sourceData.object;
@@ -61,6 +68,24 @@ pathvisiojs.data.gpml = function(){
     }
   }
 
+  function gpmlColorToCssColorNew(gpmlColor) {
+    var color;
+    if (gpmlColor.toLowerCase() === 'transparent') {
+      return 'transparent';
+    }
+    else {
+      color = new RGBColor(gpmlColor);
+      if (color.ok) {
+        return color.toHex();
+      }
+      else {
+        console.warn('Could not convert GPML Color value of "' + gpmlColor + '" to a valid CSS color. Using "#c0c0c0" as a fallback.');
+        return '#c0c0c0';
+      }
+    }
+  }
+
+
   function gpmlColorToCssColor(gpmlColor, pathvisioDefault) {
     var color;
     if (gpmlColor !== pathvisioDefault) {
@@ -80,6 +105,16 @@ pathvisiojs.data.gpml = function(){
     else {
       return pathvisioDefault;
     }
+  }
+
+  function setColorAsJsonNew(jsonElement, currentGpmlColorValue) {
+    var jsonColor = gpmlColorToCssColorNew(currentGpmlColorValue);
+    jsonElement.color = jsonColor;
+    jsonElement.borderColor = jsonColor;
+    if (jsonElement.hasOwnProperty('text')) {
+      jsonElement.text.color = jsonColor;
+    }
+    return jsonElement;
   }
 
   function setColorAsJson(jsonElement, currentGpmlColorValue, defaultGpmlColorValue) {
@@ -132,6 +167,27 @@ pathvisiojs.data.gpml = function(){
     }
   }
 
+  function getBorderStyleNew(gpmlLineStyle) {
+
+    // Double-lined EntityNodes will be handled by using a symbol with double lines.
+    // Double-lined edges will be rendered as single-lined, solid edges, because we
+    // shouldn't need double-lined edges other than for cell walls/membranes, which
+    // should be symbols. Any double-lined edges are curation issues.
+
+    var lineStyleToBorderStyleMapping = {
+      'Solid':'solid',
+      'Double':'solid',
+      'Broken':'dashed'
+    };
+    var borderStyle = lineStyleToBorderStyleMapping[gpmlLineStyle];
+    if (!!borderStyle) {
+      return borderStyle;
+    }
+    else {
+      console.warn('LineStyle "' + gpmlLineStyle + '" does not have a corresponding borderStyle. Using "solid"');
+      return 'solid';
+    }
+  }
   function getBorderStyle(gpmlLineStyle, pathvisioDefault) {
 
     // Double-lined EntityNodes will be handled by using a symbol with double lines.
@@ -166,6 +222,12 @@ pathvisiojs.data.gpml = function(){
       
       return 'whatever the default value is';
     }
+  }
+
+  function setBorderStyleAsJsonNew(jsonElement, currentGpmlLineStyleValue) {
+    var borderStyle = getBorderStyleNew(currentGpmlLineStyleValue);
+    jsonElement.borderStyle = borderStyle;
+    return jsonElement;
   }
 
   function setBorderStyleAsJson(jsonElement, currentGpmlLineStyleValue, defaultGpmlLineStyleValue) {
@@ -775,9 +837,13 @@ pathvisiojs.data.gpml = function(){
     get:get,
     toPvjson:toPvjson,
     getLineStyle:getLineStyle,
+    getBorderStyleNew:getBorderStyleNew,
+    setBorderStyleAsJsonNew:setBorderStyleAsJsonNew,
     getBorderStyle:getBorderStyle,
     setBorderStyleAsJson:setBorderStyleAsJson,
     gpmlColorToCssColor:gpmlColorToCssColor,
+    gpmlColorToCssColorNew:gpmlColorToCssColorNew,
+    setColorAsJsonNew:setColorAsJsonNew,
     setColorAsJson:setColorAsJson
   };
 }();
