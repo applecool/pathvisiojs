@@ -1,5 +1,5 @@
-/* pathvisiojs 1.0.7
-Built on 2014-02-14
+/* pathvisiojs 1.0.8
+Built on 2014-02-17
 https://github.com/wikipathways/pathvisiojs
 License: http://www.apache.org/licenses/LICENSE-2.0/ */
 
@@ -66,6 +66,8 @@ License: http://www.apache.org/licenses/LICENSE-2.0/ */
   position: absolute;
   top: 5px;
   right: 5px;
+  line-height: 1.0em; /* needed for wp */
+  display: flex; /* needed for wp */
 }
 
 #typeahead:focus {
@@ -191,6 +193,8 @@ header.annotation-header {
 
 .annotation-header-search {
   vertical-align: 10%;
+  text-decoration: none; /* tweaks needed for wp */
+  font-size: 60%; /* tweaks needed for wp */
 }
 
 .annotation-header-search:hover {
