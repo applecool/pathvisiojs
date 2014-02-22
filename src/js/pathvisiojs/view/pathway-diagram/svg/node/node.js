@@ -1,7 +1,7 @@
 pathvisiojs.view.pathwayDiagram.svg.node = function(){
   'use strict';
   function dragmove(d) {
-    /*
+    //*
     console.log(d3.event.x);
     console.log('d');
     console.log(d);

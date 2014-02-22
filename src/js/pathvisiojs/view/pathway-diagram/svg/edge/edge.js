@@ -13,6 +13,91 @@ pathvisiojs.view.pathwayDiagram.svg.edge = function(){
     var point = edgeElement.getPointAtLength(lengthFromStartToPosition);
     return point;
   }
+  
+  var startPoint, pathDataStub;
+
+  var drag = d3.behavior.drag()
+  //.origin(Object)
+  .on("dragstart", function() {
+    console.log('starting the drag!');
+    svgPanZoom.disablePan();
+    var element = d3.select(this);
+    var pathData = element.attr("d");
+    var myRe = /[^0-9\,\.M]/;
+    var indexEnd = pathData.search(myRe);
+    pathDataStub = pathData.substring(indexEnd, pathData.length - 1);
+    startPoint = pathData.substring(1, indexEnd - 1).split(',');
+  })
+  .on("drag", dragmove)
+  /*
+     .on("drag", function(d,i) {
+     console.log('dragging...');
+     console.log('d3.event.x');
+     console.log(d3.event.x);
+     console.log('d');
+     console.log(d);
+     console.log(d.id);
+     console.log('this');
+     console.log(this);
+     d.x += d3.event.dx;
+     d.y += d3.event.dy;
+     d3.select(this).attr("transform", function(d,i){
+     return "translate(" + [ d.x,d.y ] + ")";
+     });
+     })
+    //*/
+    .on("dragend", function() {
+      console.log('no more dragging? OK.');
+      svgPanZoom.enablePan();
+    });
+
+  function dragmove(d) {
+    //*
+    console.log('d3.event.x');
+    console.log(d3.event.x); // this didn't work until I commented out the .origin(Object) line lower in this page
+    console.log(d3.event);
+    console.log('d');
+    console.log(d);
+    console.log(d.id);
+    console.log('this');
+    console.log(this);
+    window.myElement = this;
+    //*
+    var startPointX = d3.event.x;
+    var startPointY = d3.event.y;
+    var element = d3.select(this).attr('d', 'M' + startPointX + ',' + startPointY + pathDataStub);
+    //*/
+
+    //*/
+    // don't have anchors rendered yet
+    /*
+    var changingAnchors = pathwayHere.elements.filter(function(element) {return element.parentId === d.id});
+    var d3Node = self.d3Node = d3.select(this);
+    console.log('changingAnchors');
+    console.log(changingAnchors);
+    d3Node.attr('transform', function(d) {return 'translate(' + d3.event.x + ' ' + d3.event.y + ')';});
+    changingAnchors.forEach(function(anchor){
+      console.log('anchor');
+      console.log(anchor);
+      console.log(d3Node);
+      self.d3Node = d3Node;
+      self.anchor = anchor;
+      anchor.x = d3Node.select('#' + anchor.id)[0][0].getCTM().e;
+      anchor.y = d3Node.select('#' + anchor.id)[0][0].getCTM().f; 
+    })
+    //*/
+    d.x = d3.event.x;
+    d.y = d3.event.y;
+
+
+    /*
+    var args = {};
+    args.svg = d3.select('svg');
+    args.pathway = pathwayHere;
+    args.uniformlyScalingShapesList = uniformlyScalingShapesListHere;
+    pathvisiojs.view.pathwayDiagram.svg.render(args, function(){console.log('rendered after drag');});
+    */
+  }
 
   //var svg, customMarkers;
 
@@ -243,6 +328,8 @@ pathvisiojs.view.pathwayDiagram.svg.edge = function(){
     },
     function(err, results) {
     //*/
+
+
     'path': function() {
       edge.attr("marker-start", markerStartAttributeValue)
       .attr("marker-end", markerEndAttributeValue)
@@ -261,7 +348,8 @@ pathvisiojs.view.pathwayDiagram.svg.edge = function(){
       .attr("fill", 'none')
       .attr("d", function (data) {
         return pathvisiojs.view.pathwayDiagram.svg.edge.path.getPath(data); //createPathDataString(results.convertedPointSet);
-      });
+      })
+      .call(drag);
 
      /****************** 
        * anchor(s) (note that this method is called from ...EDGE.render() but the result is to render a NODE)
