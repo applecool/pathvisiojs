@@ -266,3 +266,14 @@
 		stroke: orange; 
     stroke-width: 3px;
   }
+
+	.edge-terminal-drag-handle {
+		fill: yellow;
+		fill-opacity: 0.1;
+	}
+
+	.edge-terminal-drag-handle:hover {
+		fill: yellow;
+    stroke: red;
+		fill-opacity: 0.8;
+	}

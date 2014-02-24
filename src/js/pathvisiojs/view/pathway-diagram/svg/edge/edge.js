@@ -14,95 +14,12 @@ pathvisiojs.view.pathwayDiagram.svg.edge = function(){
     return point;
   }
   
-  var startPoint, pathDataStub;
-
-  var drag = d3.behavior.drag()
-  //.origin(Object)
-  .on("dragstart", function() {
-    console.log('starting the drag!');
-    svgPanZoom.disablePan();
-    var element = d3.select(this);
-    var pathData = element.attr("d");
-    var myRe = /[^0-9\,\.M]/;
-    var indexEnd = pathData.search(myRe);
-    pathDataStub = pathData.substring(indexEnd, pathData.length - 1);
-    startPoint = pathData.substring(1, indexEnd - 1).split(',');
-  })
-  .on("drag", dragmove)
-  /*
-     .on("drag", function(d,i) {
-     console.log('dragging...');
-     console.log('d3.event.x');
-     console.log(d3.event.x);
-     console.log('d');
-     console.log(d);
-     console.log(d.id);
-     console.log('this');
-     console.log(this);
-     d.x += d3.event.dx;
-     d.y += d3.event.dy;
-     d3.select(this).attr("transform", function(d,i){
-     return "translate(" + [ d.x,d.y ] + ")";
-     });
-     })
-    //*/
-    .on("dragend", function() {
-      console.log('no more dragging? OK.');
-      svgPanZoom.enablePan();
-    });
-
-  function dragmove(d) {
-    //*
-    console.log('d3.event.x');
-    console.log(d3.event.x); // this didn't work until I commented out the .origin(Object) line lower in this page
-    console.log(d3.event);
-    console.log('d');
-    console.log(d);
-    console.log(d.id);
-    console.log('this');
-    console.log(this);
-    window.myElement = this;
-    //*
-    var startPointX = d3.event.x;
-    var startPointY = d3.event.y;
-    var element = d3.select(this).attr('d', 'M' + startPointX + ',' + startPointY + pathDataStub);
-    //*/
-
-    //*/
-    // don't have anchors rendered yet
-    /*
-    var changingAnchors = pathwayHere.elements.filter(function(element) {return element.parentId === d.id});
-    var d3Node = self.d3Node = d3.select(this);
-    console.log('changingAnchors');
-    console.log(changingAnchors);
-    d3Node.attr('transform', function(d) {return 'translate(' + d3.event.x + ' ' + d3.event.y + ')';});
-    changingAnchors.forEach(function(anchor){
-      console.log('anchor');
-      console.log(anchor);
-      console.log(d3Node);
-      self.d3Node = d3Node;
-      self.anchor = anchor;
-      anchor.x = d3Node.select('#' + anchor.id)[0][0].getCTM().e;
-      anchor.y = d3Node.select('#' + anchor.id)[0][0].getCTM().f; 
-    })
-    //*/
-    d.x = d3.event.x;
-    d.y = d3.event.y;
-
-
-    /*
-    var args = {};
-    args.svg = d3.select('svg');
-    args.pathway = pathwayHere;
-    args.uniformlyScalingShapesList = uniformlyScalingShapesListHere;
-    pathvisiojs.view.pathwayDiagram.svg.render(args, function(){console.log('rendered after drag');});
-    */
-  }
 
   //var svg, customMarkers;
 
   function render(args, callback) {
     var svg = args.svg,
+      container = args.container,
       edge = args.element,
       parentDataElement;
     if (!svg) {
@@ -348,8 +265,7 @@ pathvisiojs.view.pathwayDiagram.svg.edge = function(){
       .attr("fill", 'none')
       .attr("d", function (data) {
         return pathvisiojs.view.pathwayDiagram.svg.edge.path.getPath(data); //createPathDataString(results.convertedPointSet);
-      })
-      .call(drag);
+      });
 
      /****************** 
        * anchor(s) (note that this method is called from ...EDGE.render() but the result is to render a NODE)
@@ -357,6 +273,153 @@ pathvisiojs.view.pathwayDiagram.svg.edge = function(){
 
       if (data.hasOwnProperty('Anchor')) {
         pathvisiojs.view.pathwayDiagram.svg.node.anchor.render(container, edgeId, data.Anchor);
+      }
+
+      var dragSegment, dragPointCoordinates, pathDataStub;
+
+      var drag = d3.behavior.drag()
+      //.origin(Object)
+      .on("dragstart", function() {
+        console.log('starting the drag!');
+        svgPanZoom.disablePan();
+        var element = d3.select(this);
+        var id = element.attr('id');
+        /*
+        var pathData = edge.attr("d");
+        var myRe = /[^0-9\,\.M]/;
+        var indexEnd = pathData.search(myRe);
+        pathDataStub = pathData.substring(indexEnd, pathData.length - 1);
+        dragPointCoordinates = pathData.substring(1, indexEnd - 1).split(',');
+        //*/
+        var edgeElement = edge[0][0];
+        var numberOfItems;
+        if (id === 'source-handle') {
+          dragPointCoordinates = edgeElement.getPointAtLength(0);
+          dragSegment = edgeElement.pathSegList.getItem(0);
+        }
+        else {
+          numberOfItems = edgeElement.pathSegList.numberOfItems;
+          dragPointCoordinates = edgeElement.getPointAtLength(edgeElement.getTotalLength());
+          dragSegment = edgeElement.pathSegList.getItem(numberOfItems - 1);
+        }
+      })
+      .on("drag", dragmove)
+      /*
+         .on("drag", function(d,i) {
+         console.log('dragging...');
+         console.log('d3.event.x');
+         console.log(d3.event.x);
+         console.log('d');
+         console.log(d);
+         console.log(d.id);
+         console.log('this');
+         console.log(this);
+         d.x += d3.event.dx;
+         d.y += d3.event.dy;
+         d3.select(this).attr("transform", function(d,i){
+         return "translate(" + [ d.x,d.y ] + ")";
+         });
+         })
+        //*/
+        .on("dragend", function() {
+          console.log('no more dragging? OK.');
+          svgPanZoom.enablePan();
+        });
+
+      function dragmove(d) {
+        //*
+        console.log('d3.event.x');
+        console.log(d3.event.x); // this didn't work until I commented out the .origin(Object) line lower in this page
+        console.log(d3.event);
+        console.log('d');
+        console.log(d);
+        console.log('this');
+        console.log(this);
+        window.myElement = this;
+        var dragPointX = d3.event.x;
+        var dragPointY = d3.event.y;
+        var element = d3.select(this).attr('cx', dragPointX)
+        .attr('cy', dragPointY);
+        //*
+        //var draggedEdge = edge.attr('d', 'M' + dragPointX + ',' + dragPointY + pathDataStub);
+        dragSegment.x = dragPointX;
+        dragSegment.y = dragPointY;
+        //*/
+
+        //*/
+        // don't have anchors rendered yet
+        /*
+        var changingAnchors = pathwayHere.elements.filter(function(element) {return element.parentId === d.id});
+        var d3Node = self.d3Node = d3.select(this);
+        console.log('changingAnchors');
+        console.log(changingAnchors);
+        d3Node.attr('transform', function(d) {return 'translate(' + d3.event.x + ' ' + d3.event.y + ')';});
+        changingAnchors.forEach(function(anchor){
+          console.log('anchor');
+          console.log(anchor);
+          console.log(d3Node);
+          self.d3Node = d3Node;
+          self.anchor = anchor;
+          anchor.x = d3Node.select('#' + anchor.id)[0][0].getCTM().e;
+          anchor.y = d3Node.select('#' + anchor.id)[0][0].getCTM().f; 
+        })
+        //*/
+
+        /*
+        edge.data(function(d) {
+          d.x = d3.event.x;
+          d.y = d3.event.y;
+        });
+        //*/
+
+
+        /*
+        var args = {};
+        args.svg = d3.select('svg');
+        args.pathway = pathwayHere;
+        args.uniformlyScalingShapesList = uniformlyScalingShapesListHere;
+        pathvisiojs.view.pathwayDiagram.svg.render(args, function(){console.log('rendered after drag');});
+        */
+      }
+
+      var setAttributesForEdgeTerminalDragHandles = function() {
+        var id = this.attr('id');
+        this.attr('cx', function(d) {
+          var point;
+          if (id === 'source-handle') {
+            point = data.Point[0];
+          }
+          else {
+            point = data.Point[data.Point.length - 1];
+          }
+          return point.x;
+        })
+        .attr('cy', function(d) {
+          var point;
+          if (id === 'source-handle') {
+            point = data.Point[0];
+          }
+          else {
+            point = data.Point[data.Point.length - 1];
+          }
+          return point.y;
+        })
+        .attr('r', 6)
+        .attr('class', 'edge-terminal-drag-handle')
+        .call(drag);
+      };
+
+      /****************** 
+       * drag handles for edge terminals (ends) while in edit mode
+       * ***************/
+      //if (mode.edit) {
+      if (1===1) {
+        container.append('circle')
+        .attr('id', 'source-handle')
+        .call(setAttributesForEdgeTerminalDragHandles);
+        container.append('circle')
+        .attr('id', 'target-handle')
+        .call(setAttributesForEdgeTerminalDragHandles);
       }
 
       /****************** 

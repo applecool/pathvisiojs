@@ -8,8 +8,8 @@ pathvisiojs.view.pathwayDiagram.svg.edge.interaction = function(){
     else {
       interactionType = InteractionGraph.interactionType;
       if (!interactionType) {
-        return 'none';
         console.warn('No interactionType specified for interaction.');
+        return 'none';
       }
       else {
 
@@ -54,11 +54,11 @@ pathvisiojs.view.pathwayDiagram.svg.edge.interaction = function(){
           cssClass += 'has-xref ';
           if (!!data.DatasourceReference.ID) {
             interaction.on("click", function(d,i) {
-              pathvisiojs.view.annotation.xRef.render(args.pathway.Organism, d['DatasourceReference'].ID, d['DatasourceReference'].Database, d.renderableType, d.markerStart+'<-->'+d.markerEnd); // d.InteractionGraph[0].interactsWith.text.line[0]+' + '+d.InteractionGraph[0].text.line[0], d.renderableType); 
-	      //That's capital 'O' Organism from GPML vocab.
-	      //Names of interaction partners is given as header, which is also used to form site query, 
-	      // thus the "+" is used to convey both the interaction and query logic.
-            })
+              pathvisiojs.view.annotation.xRef.render(args.pathway.Organism, d.DatasourceReference.ID, d.DatasourceReference.Database, d.renderableType, d.markerStart+'<-->'+d.markerEnd); // d.InteractionGraph[0].interactsWith.text.line[0]+' + '+d.InteractionGraph[0].text.line[0], d.renderableType); 
+              //That's capital 'O' Organism from GPML vocab.
+              //Names of interaction partners is given as header, which is also used to form site query, 
+              // thus the "+" is used to convey both the interaction and query logic.
+            });
           }
         }
         if (data.hasOwnProperty('strokeStyle')) {
@@ -67,7 +67,7 @@ pathvisiojs.view.pathwayDiagram.svg.edge.interaction = function(){
           }
         }
         return cssClass;
-      })
+      });
 
       var containerElement = container[0][0];
       var containerElementX, containerElementY;
@@ -76,7 +76,7 @@ pathvisiojs.view.pathwayDiagram.svg.edge.interaction = function(){
           containerElementX = containerElement.__data__.x || 0;
           containerElementY = containerElement.__data__.y || 0;
           return 'translate(' + (-1*containerElementX) + ' ' + (-1*containerElementY) + ')';
-        })
+        });
       }
     });
 
