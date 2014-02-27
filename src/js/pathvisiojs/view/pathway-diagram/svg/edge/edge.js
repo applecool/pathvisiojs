@@ -292,6 +292,7 @@ pathvisiojs.view.pathwayDiagram.svg.edge = function(){
         dragPointCoordinates = pathData.substring(1, indexEnd - 1).split(',');
         //*/
         var edgeElement = edge[0][0];
+        edge.attr('id', 'changed');
         var numberOfItems;
         if (id === 'source-handle') {
           dragPointCoordinates = edgeElement.getPointAtLength(0);

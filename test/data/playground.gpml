@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Pathway xmlns="http://pathvisio.org/GPML/2013a" Name="New Pathway" Version="20140130">
-  <Graphics BoardWidth="1288.663309788563" BoardHeight="576.0" />
+  <Graphics BoardWidth="291.97222222222223" BoardHeight="420.94658119658123" />
   <DataNode TextLabel="mytextlabel" GraphId="fd721" Type="GeneProduct">
     <Graphics CenterX="208.54700854700857" CenterY="191.45299145299145" Width="80.0" Height="20.0" ZOrder="32768" FillColor="Transparent" FontSize="10" Valign="Middle" />
     <Xref Database="" ID="" />
   </DataNode>
+  <State GraphRef="fd721" TextLabel="P" GraphId="b834e">
+    <Graphics RelX="0.34417628541448053" RelY="1.0" Width="15.0" Height="15.0" ShapeType="Oval" />
+    <Xref Database="" ID="" />
+  </State>
   <Label TextLabel="mytextlabel" GraphId="f846c">
     <Graphics CenterX="191.45299145299145" CenterY="258.11965811965814" Width="80.0" Height="20.0" ZOrder="28672" FontSize="10" Valign="Middle" ShapeType="Rectangle" />
   </Label>
