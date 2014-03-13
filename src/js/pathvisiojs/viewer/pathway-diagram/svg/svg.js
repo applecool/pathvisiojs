@@ -454,7 +454,7 @@ pathvisiojs.view.pathwayDiagram.svg = function(){
           }
           else if (dataElement.graphicalType === 'text') {
             console.log('text');
-            //pathvisiojs.view.pathwayDiagram.svg.edge.interaction.render(renderingArgs);
+            pathvisiojs.view.pathwayDiagram.svg.text.render(viewport, dataElement);
           }
           else if (dataElement.graphicalType === 'image') {
             console.log('image');
